@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Central de Comunicação Hospitalar</title>
+
+<style>
+  :root{
+    --bg1:#0b1220;
+    --bg2:#0a2a5e;
+    --card:rgba(255,255,255,.10);
+    --card2:rgba(255,255,255,.14);
+    --stroke:rgba(255,255,255,.16);
+    --text:rgba(255,255,255,.92);
+    --muted:rgba(255,255,255,.72);
+    --shadow:0 20px 60px rgba(0,0,0,.45);
+    --shadow2:0 10px 30px rgba(0,0,0,.35);
+    --r16:16px;
+    --r24:24px;
+    --ok:#35c759;
+    --warn:#ffcc00;
+    --bad:#ff3b30;
+    --blue:#0a84ff;
+    --vio:#bf5af2;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    background:
+      radial-gradient(900px 500px at 20% 10%, rgba(191,90,242,.35), transparent 60%),
+      radial-gradient(900px 500px at 80% 0%, rgba(10,132,255,.40), transparent 55%),
+      radial-gradient(900px 500px at 60% 90%, rgba(53,199,89,.20), transparent 60%),
+      linear-gradient(160deg, var(--bg1), var(--bg2));
+    overflow-x:hidden;
+  }
+  .noise{
+    pointer-events:none;
+    position:fixed; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+    mix-blend-mode:overlay;
+    opacity:.35;
+  }
+  a{color:inherit}
+  .wrap{
+    max-width:1160px;
+    margin:0 auto;
+    padding:18px 16px 60px;
+  }
+
+  /* Topbar */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+  }
+  .logo{
+    width:38px; height:38px; border-radius:14px;
+    background:linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+    border:1px solid var(--stroke);
+    box-shadow:var(--shadow2);
+    position:relative;
+    overflow:hidden;
+  }
+  .logo:before{
+    content:"";
+    position:absolute; inset:-40%;
+    background:radial-gradient(circle at 30% 30%, rgba(10,132,255,.6), transparent 55%),
+               radial-gradient(circle at 70% 70%, rgba(191,90,242,.5), transparent 55%);
+    transform:rotate(10deg);
+  }
+  .titleblock .t1{
+    font-size:14px;
+    color:var(--muted);
+    letter-spacing:.2px;
+  }
+  .titleblock .t2{
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+  .userpill{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px;
+    border-radius:999px;
+    background:var(--card);
+    border:1px solid var(--stroke);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .dot{
+    width:10px; height:10px; border-radius:50%;
+    background:var(--ok);
+    box-shadow:0 0 0 4px rgba(53,199,89,.18);
+  }
+  .userpill .meta{
+    display:flex; flex-direction:column; line-height:1.1;
+  }
+  .userpill .meta b{font-size:13px}
+  .userpill .meta span{font-size:12px; color:var(--muted)}
+  .btn{
+    appearance:none;
+    border:1px solid var(--stroke);
+    background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.08));
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:14px;
+    cursor:pointer;
+    box-shadow:var(--shadow2);
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .btn:active{ transform:scale(.98) }
+  .btn.primary{
+    border-color:rgba(10,132,255,.45);
+    background:linear-gradient(180deg, rgba(10,132,255,.35), rgba(10,132,255,.18));
+  }
+  .btn.danger{
+    border-color:rgba(255,59,48,.5);
+    background:linear-gradient(180deg, rgba(255,59,48,.35), rgba(255,59,48,.16));
+  }
+  .btn.ghost{
+    background:transparent;
+    box-shadow:none;
+  }
+
+  /* Glass card */
+  .glass{
+    background:var(--card);
+    border:1px solid var(--stroke);
+    border-radius:var(--r24);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:var(--shadow);
+  }
+
+  /* Layout */
+  .grid{
+    display:grid;
+    grid-template-columns: 360px 1fr;
+    gap:16px;
+  }
+  @media(max-width: 980px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  /* Sidebar */
+  .side{
+    padding:16px;
+  }
+  .navtitle{
+    font-size:12px;
+    color:var(--muted);
+    letter-spacing:.25px;
+    margin:6px 2px 12px;
+  }
+  .nav{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .nav .item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:12px 12px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.08);
+    cursor:pointer;
+    transition:transform .12s ease, filter .12s ease, background .12s ease;
+  }
+  .nav .item:hover{ filter:brightness(1.05) }
+  .nav .item:active{ transform:scale(.99) }
+  .nav .item .left{
+    display:flex; align-items:center; gap:12px;
+  }
+  .ic{
+    width:36px;height:36px;border-radius:14px;
+    display:grid;place-items:center;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.10);
+  }
+  .ic svg{ width:18px; height:18px; opacity:.95 }
+  .item b{ font-size:14px }
+  .item small{ display:block; color:var(--muted); font-size:12px; margin-top:2px }
+  .chip{
+    font-size:11px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(0,0,0,.12);
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .chip.red{ border-color:rgba(255,59,48,.35); color:rgba(255,255,255,.92); background:rgba(255,59,48,.18) }
+  .chip.blue{ border-color:rgba(10,132,255,.35); color:rgba(255,255,255,.92); background:rgba(10,132,255,.18) }
+  .chip.green{ border-color:rgba(53,199,89,.35); color:rgba(255,255,255,.92); background:rgba(53,199,89,.18) }
+  .chip.yellow{ border-color:rgba(255,204,0,.35); color:rgba(255,255,255,.92); background:rgba(255,204,0,.16) }
+
+  /* Main */
+  .main{
+    padding:16px;
+  }
+  .hero{
+    padding:18px;
+    border-radius:22px;
+    background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06));
+    border:1px solid rgba(255,255,255,.16);
+  }
+  .hero h2{
+    margin:0 0 6px 0;
+    font-size:18px;
+    letter-spacing:.2px;
+  }
+  .hero p{
+    margin:0;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.35;
+  }
+
+  .section{
+    margin-top:14px;
+    padding:16px;
+    border-radius:22px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.12);
+  }
+  .sectionhead{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:12px;
+  }
+  .sectionhead h3{
+    margin:0;
+    font-size:14px;
+    letter-spacing:.2px;
+  }
+  .row{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+  }
+  @media(max-width: 680px){
+    .row{ grid-template-columns: 1fr; }
+  }
+  .field label{
+    display:block;
+    font-size:12px;
+    color:var(--muted);
+    margin:0 0 6px 2px;
+  }
+  .field input, .field select, .field textarea{
+    width:100%;
+    padding:12px 12px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(0,0,0,.18);
+    color:var(--text);
+    outline:none;
+  }
+  .field textarea{ min-height:88px; resize:vertical }
+  .actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:12px;
+  }
+
+  /* Tables / Lists */
+  .list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .cardrow{
+    padding:14px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.08);
+    cursor:pointer;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .cardrow:hover{ filter:brightness(1.05) }
+  .cardrow:active{ transform:scale(.995) }
+  .cardrow .top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .cardrow .top b{
+    font-size:14px;
+    display:block;
+    margin-bottom:3px;
+  }
+  .cardrow .sub{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.35;
+  }
+  .metaLine{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:10px;
+  }
+
+  /* Timeline */
+  .timeline{
+    position:relative;
+    padding-left:18px;
+  }
+  .timeline:before{
+    content:"";
+    position:absolute;
+    left:7px; top:4px; bottom:4px;
+    width:2px;
+    background:linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.08));
+    border-radius:999px;
+  }
+  .ev{
+    position:relative;
+    padding:12px 12px 12px 14px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.08);
+    margin-bottom:10px;
+  }
+  .ev:before{
+    content:"";
+    position:absolute;
+    left:-18px; top:16px;
+    width:10px; height:10px;
+    border-radius:50%;
+    background:rgba(255,255,255,.9);
+    box-shadow:0 0 0 5px rgba(255,255,255,.10);
+  }
+  .ev .h{
+    display:flex; justify-content:space-between; gap:10px;
+    margin-bottom:6px;
+  }
+  .ev .h b{ font-size:13px }
+  .ev .h span{ font-size:11px; color:var(--muted) }
+  .ev p{ margin:0; font-size:12.5px; color:rgba(255,255,255,.88); line-height:1.35 }
+  .ev .tags{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+
+  /* Modals */
+  .modalback{
+    position:fixed; inset:0;
+    background:rgba(0,0,0,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    z-index:50;
+  }
+  .modal{
+    width:min(680px, 100%);
+    border-radius:24px;
+    padding:16px;
+    background:rgba(20,26,40,.88);
+    border:1px solid rgba(255,255,255,.14);
+    backdrop-filter: blur(18px);
+    box-shadow:var(--shadow);
+  }
+  .modal .head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-bottom:10px;
+  }
+  .modal .head h4{ margin:0; font-size:14px }
+  .modal .body{ padding:6px 2px 2px }
+  .modal .foot{ display:flex; gap:10px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap; }
+  .x{
+    border:none; background:transparent; color:var(--muted);
+    font-size:18px; cursor:pointer; padding:6px 10px; border-radius:12px;
+  }
+  .x:hover{ background:rgba(255,255,255,.06); color:var(--text) }
+
+  /* Toasts + loader */
+  .toasts{
+    position:fixed;
+    right:14px; bottom:14px;
+    display:flex; flex-direction:column; gap:10px;
+    z-index:60;
+  }
+  .toast{
+    min-width:280px;
+    padding:12px 12px;
+    border-radius:16px;
+    background:rgba(20,26,40,.88);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:var(--shadow2);
+    backdrop-filter: blur(18px);
+  }
+  .toast b{ font-size:13px; display:block; margin-bottom:4px }
+  .toast span{ font-size:12px; color:var(--muted); line-height:1.3 }
+  .toast.ok{ border-color:rgba(53,199,89,.30) }
+  .toast.bad{ border-color:rgba(255,59,48,.30) }
+  .toast.warn{ border-color:rgba(255,204,0,.30) }
+  .loader{
+    position:fixed; inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:55;
+    background:rgba(0,0,0,.35);
+    backdrop-filter: blur(4px);
+  }
+  .spinner{
+    width:44px;height:44px;border-radius:50%;
+    border:3px solid rgba(255,255,255,.25);
+    border-top-color: rgba(255,255,255,.9);
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg) } }
+
+  /* Login view */
+  .loginbox{
+    max-width:560px;
+    margin: 10vh auto 0;
+    padding:18px;
+  }
+  .loginbox h1{
+    margin:0 0 6px;
+    font-size:20px;
+    letter-spacing:.2px;
+  }
+  .loginbox p{
+    margin:0 0 16px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.35;
+  }
+  .loginrow{
+    display:flex; gap:10px; flex-wrap:wrap;
+  }
+  .loginrow input{
+    flex:1;
+    padding:14px 14px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(0,0,0,.20);
+    color:var(--text);
+    font-size:16px;
+    outline:none;
+  }
+  .loginrow .btn{ padding:14px 14px; border-radius:16px; }
+  .hint{
+    margin-top:10px;
+    font-size:12px;
+    color:var(--muted);
+  }
+</style>
+</head>
+
+<body>
+<div class="noise"></div>
+
+<div class="wrap">
+
+  <!-- TOPBAR -->
+  <div class="topbar" id="topbar" style="display:none;">
+    <div class="brand">
+      <div class="logo"></div>
+      <div class="titleblock">
+        <div class="t1">Central de Comunicação</div>
+        <div class="t2">Hospitalar</div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <div class="userpill" id="userpill">
+        <div class="dot"></div>
+        <div class="meta">
+          <b id="uSetor">—</b>
+          <span id="uRamal">Ramal —</span>
+        </div>
+      </div>
+      <button class="btn ghost" onclick="logout()" title="Sair">Sair</button>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="glass loginbox" id="viewLogin">
+    <h1>Entrar por ramal</h1>
+    <p>Rápido, sem senha. Identificação por setor. O Plantão Administrativo tem painel completo.</p>
+    <div class="loginrow">
+      <input id="inpRamal" inputmode="numeric" placeholder="Digite o ramal (ex: 1102)" />
+      <button class="btn primary" onclick="doLogin()">Entrar</button>
+    </div>
+    <div class="hint">Dica: se der “ramal inválido”, confira se está ativo em <b>CONFIG_RAMAL</b> e (para ADM) em <b>USUARIOS_PLANTAO</b>.</div>
+  </div>
+
+  <!-- APP -->
+  <div class="grid" id="viewApp" style="display:none;">
+    <!-- Sidebar -->
+    <div class="glass side">
+      <div class="navtitle">Ações</div>
+      <div class="nav">
+        <div class="item" onclick="go('home')">
+          <div class="left">
+            <div class="ic">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M10 20v-6h4v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 11l8-7 8 7v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <b>Início</b>
+              <small>Atalhos e visão rápida</small>
+            </div>
+          </div>
+          <span class="chip blue">App</span>
+        </div>
+
+        <div class="item" onclick="go('sepseNovo')">
+          <div class="left">
+            <div class="ic">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 22v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4.93 4.93l4.24 4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14.83 14.83l4.24 4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M2 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M22 12h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4.93 19.07l4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14.83 9.17l4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <b>Abrir Sepse</b>
+              <small>Iniciar protocolo</small>
+            </div>
+          </div>
+          <span class="chip red">Crítico</span>
+        </div>
+
+        <div class="item" onclick="go('sepseMeus')">
+          <div class="left">
+            <div class="ic">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div>
+              <b>Meus Protocolos</b>
+              <small>O que eu abri</small>
+            </div>
+          </div>
+          <span class="chip">Lista</span>
+        </div>
+
+        <div class="item" id="navPlantao" onclick="go('plantao')" style="display:none;">
+          <div class="left">
+            <div class="ic">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12" stroke="currentColor" stroke-width="2"/><path d="M6 9h12M6 13h8M6 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <b>Painel do Plantão</b>
+              <small>Todos os sepse</small>
+            </div>
+          </div>
+          <span class="chip green">ADM</span>
+        </div>
+      </div>
+
+      <div class="navtitle" style="margin-top:14px;">Atalhos</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn" onclick="refreshCurrent()">Atualizar</button>
+        <button class="btn" onclick="go('home')">Voltar</button>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="glass main">
+      <div class="hero" id="hero">
+        <h2 id="heroTitle">Início</h2>
+        <p id="heroDesc">Entre pelo ramal, abra o protocolo e registre os eventos em timeline. Plantão recebe tudo.</p>
+      </div>
+
+      <!-- HOME -->
+      <div class="section" id="pageHome">
+        <div class="sectionhead">
+          <h3>Visão rápida</h3>
+          <span class="chip">Fluxo plantão-friendly</span>
+        </div>
+        <div class="list" id="homeCards"></div>
+      </div>
+
+      <!-- SEPSE NOVO -->
+      <div class="section" id="pageSepseNovo" style="display:none;">
+        <div class="sectionhead">
+          <h3>Abrir Protocolo Sepse</h3>
+          <span class="chip red">Registro imediato</span>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Paciente</label>
+            <input id="sPaciente" placeholder="Nome do paciente" />
+          </div>
+          <div class="field">
+            <label>Prontuário</label>
+            <input id="sProntuario" placeholder="Número do prontuário" />
+          </div>
+          <div class="field">
+            <label>Leito</label>
+            <input id="sLeito" placeholder="Ex: B514" />
+          </div>
+          <div class="field">
+            <label>Unidade</label>
+            <input id="sUnidade" placeholder="Ex: B5 Cirurgia Oncológica" />
+          </div>
+          <div class="field">
+            <label>Médico responsável</label>
+            <input id="sMedico" placeholder="Nome do médico" />
+          </div>
+          <div class="field">
+            <label>Observações</label>
+            <input id="sObs" placeholder="Opcional" />
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" onclick="criarSepse()">Abrir protocolo</button>
+          <button class="btn" onclick="go('home')">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- SEPSE MEUS -->
+      <div class="section" id="pageSepseMeus" style="display:none;">
+        <div class="sectionhead">
+          <h3>Meus Protocolos</h3>
+          <span class="chip">por ramal</span>
+        </div>
+        <div class="list" id="meusList"></div>
+      </div>
+
+      <!-- PLANTAO -->
+      <div class="section" id="pagePlantao" style="display:none;">
+        <div class="sectionhead">
+          <h3>Painel do Plantão</h3>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <select id="fltStatus" class="btn" onchange="carregarPlantao()">
+              <option value="TODOS">Todos</option>
+              <option value="ABERTO">Aberto</option>
+              <option value="CONCLUIDO">Concluído</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+            <button class="btn" onclick="carregarPlantao()">Recarregar</button>
+          </div>
+        </div>
+        <div class="list" id="plantaoList"></div>
+      </div>
+
+      <!-- DETALHE SEPSE -->
+      <div class="section" id="pageSepseDetalhe" style="display:none;">
+        <div class="sectionhead">
+          <h3>Protocolo Sepse</h3>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <span class="chip red" id="dStatus">—</span>
+            <span class="chip" id="dMeta">—</span>
+          </div>
+        </div>
+
+        <div id="detailCard" style="margin-bottom:12px;"></div>
+
+        <div class="actions" id="detailActions"></div>
+
+        <div class="sectionhead" style="margin-top:14px;">
+          <h3>Timeline</h3>
+          <span class="chip blue">Eventos</span>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal: Registrar ligação -->
+<div class="modalback" id="modalBack">
+  <div class="modal">
+    <div class="head">
+      <h4>Registrar ligação</h4>
+      <button class="x" onclick="closeModal()">×</button>
+    </div>
+    <div class="body">
+      <div class="row">
+        <div class="field">
+          <label>Setor</label>
+          <select id="mSetor"></select>
+        </div>
+        <div class="field">
+          <label>Resultado</label>
+          <select id="mResultado">
+            <option>ATENDEU</option>
+            <option>SEM CONTATO</option>
+            <option>OCUPADO</option>
+            <option>RAMAL INEXISTENTE</option>
+            <option>JÁ CIENTE</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Observação (opcional)</label>
+        <input id="mObs" placeholder="Ex: informou que vai priorizar / pediu retorno / etc." />
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn primary" onclick="confirmLigacao()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loader / Toasts -->
+<div class="loader" id="loader"><div class="spinner"></div></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* =========================
+   STATE
+========================= */
+const S = {
+  user: null,
+  isAdm: false,
+  setoresSepse: [],
+  current: { page:'home', sepseId:null, sepse:null, timeline:[] }
+};
+
+/* =========================
+   UI utils
+========================= */
+function $(id){ return document.getElementById(id); }
+function showLoader(on=true){ $('loader').style.display = on ? 'flex' : 'none'; }
+function toast(type, title, msg){
+  const el = document.createElement('div');
+  el.className = `toast ${type||''}`;
+  el.innerHTML = `<b>${escapeHtml(title||'')}</b><span>${escapeHtml(msg||'')}</span>`;
+  $('toasts').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(6px)'; }, 2600);
+  setTimeout(()=>{ el.remove(); }, 3200);
+}
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+function setHero(t,d){ $('heroTitle').textContent=t; $('heroDesc').textContent=d; }
+
+function go(page){
+  S.current.page = page;
+  // hide all pages
+  ['pageHome','pageSepseNovo','pageSepseMeus','pagePlantao','pageSepseDetalhe'].forEach(id => $(id).style.display='none');
+
+  if (page==='home'){
+    setHero('Início','Abra Sepse e registre ações em timeline. Plantão recebe tudo automaticamente.');
+    $('pageHome').style.display='block';
+    renderHome();
+  }
+  if (page==='sepseNovo'){
+    setHero('Abrir Sepse','Preencha o mínimo. O resto vira evento na timeline, sem bagunça.');
+    $('pageSepseNovo').style.display='block';
+  }
+  if (page==='sepseMeus'){
+    setHero('Meus Protocolos','O que você abriu pelo seu ramal.');
+    $('pageSepseMeus').style.display='block';
+    carregarMeus();
+  }
+  if (page==='plantao'){
+    setHero('Painel do Plantão','Visão global. Filtre e abra o detalhe com timeline completa.');
+    $('pagePlantao').style.display='block';
+    carregarPlantao();
+  }
+  if (page==='sepseDetalhe'){
+    setHero('Protocolo Sepse','Ações rápidas + timeline como diário operacional.');
+    $('pageSepseDetalhe').style.display='block';
+  }
+}
+
+function refreshCurrent(){
+  const p = S.current.page;
+  if (p==='sepseMeus') return carregarMeus();
+  if (p==='plantao') return carregarPlantao();
+  if (p==='sepseDetalhe' && S.current.sepseId) return abrirDetalheSepse(S.current.sepseId);
+  renderHome();
+}
+
+/* =========================
+   LOGIN
+========================= */
+function doLogin(){
+  const ramal = $('inpRamal').value.trim();
+  if (!ramal) return toast('warn','Faltou o ramal','Digite um ramal válido.');
+
+  showLoader(true);
+  google.script.run.withSuccessHandler(user=>{
+    if (!user){
+      showLoader(false);
+      toast('bad','Ramal inválido','Confira CONFIG_RAMAL (ativo).');
+      return;
+    }
+    S.user = user;
+
+    google.script.run.withSuccessHandler(isAdm=>{
+      S.isAdm = !!isAdm;
+      $('viewLogin').style.display='none';
+      $('viewApp').style.display='grid';
+      $('topbar').style.display='flex';
+      $('uSetor').textContent = user.setor || '—';
+      $('uRamal').textContent = `Ramal ${user.ramal}`;
+      $('navPlantao').style.display = S.isAdm ? 'flex' : 'none';
+
+      // carregar setores sepse
+      google.script.run.withSuccessHandler(list=>{
+        S.setoresSepse = list || [];
+        // home
+        go('home');
+        showLoader(false);
+        toast('ok','Entrou','Sistema pronto.');
+      }).listarSetoresSepseAtivos();
+
+    }).ehPlantao(user.ramal);
+
+  }).validarRamal(ramal);
+}
+
+function logout(){
+  S.user=null; S.isAdm=false; S.setoresSepse=[]; S.current={page:'home',sepseId:null,sepse:null,timeline:[]};
+  $('viewApp').style.display='none';
+  $('topbar').style.display='none';
+  $('viewLogin').style.display='block';
+  $('inpRamal').value='';
+  toast('ok','Saiu','Sessão encerrada.');
+}
+
+/* =========================
+   HOME
+========================= */
+function renderHome(){
+  const box = $('homeCards');
+  box.innerHTML = '';
+
+  const cards = [
+    {
+      title:'Abrir Protocolo Sepse',
+      desc:'Inicia protocolo com dados mínimos. O resto vira evento na timeline.',
+      chip:'Crítico',
+      chipClass:'red',
+      onClick:()=>go('sepseNovo')
+    },
+    {
+      title:'Meus Protocolos',
+      desc:'Veja o que você abriu e acompanhe o andamento simplificado.',
+      chip:'Lista',
+      chipClass:'',
+      onClick:()=>go('sepseMeus')
+    }
+  ];
+
+  if (S.isAdm){
+    cards.push({
+      title:'Painel do Plantão',
+      desc:'Tudo em um lugar: filtros, detalhe e timeline completa.',
+      chip:'ADM',
+      chipClass:'green',
+      onClick:()=>go('plantao')
+    });
+  }
+
+  for (const c of cards){
+    const el = document.createElement('div');
+    el.className = 'cardrow';
+    el.onclick = c.onClick;
+    el.innerHTML = `
+      <div class="top">
+        <div>
+          <b>${escapeHtml(c.title)}</b>
+          <div class="sub">${escapeHtml(c.desc)}</div>
+        </div>
+        <span class="chip ${c.chipClass||''}">${escapeHtml(c.chip)}</span>
+      </div>
+    `;
+    box.appendChild(el);
+  }
+}
+
+/* =========================
+   SEPSE - Criar
+========================= */
+function criarSepse(){
+  const payload = {
+    paciente: $('sPaciente').value.trim(),
+    prontuario: $('sProntuario').value.trim(),
+    leito: $('sLeito').value.trim(),
+    unidade: $('sUnidade').value.trim(),
+    medico: $('sMedico').value.trim(),
+    observacao: $('sObs').value.trim(),
+    setor: S.user?.setor || 'SOLICITANTE',
+    ramal: S.user?.ramal || ''
+  };
+
+  if (!payload.paciente || !payload.prontuario){
+    return toast('
+    'warn',
+    'Dados obrigatórios',
+    'Paciente e prontuário são obrigatórios.'
+  );
+  }
+
+  showLoader(true);
+  google.script.run.withSuccessHandler(id=>{
+    showLoader(false);
+    toast('ok','Protocolo criado','Sepse aberta com sucesso.');
+    abrirDetalheSepse(id);
+  }).criarProtocoloSepse(payload);
+}
+
+/* =========================
+   SEPSE - Listar meus
+========================= */
+function carregarMeus(){
+  showLoader(true);
+  google.script.run.withSuccessHandler(list=>{
+    showLoader(false);
+    const box = $('meusList');
+    box.innerHTML = '';
+    if (!list || !list.length){
+      box.innerHTML = `<div class="cardrow"><div class="sub">Nenhum protocolo encontrado.</div></div>`;
+      return;
+    }
+    list.forEach(p=>{
+      const el = document.createElement('div');
+      el.className = 'cardrow';
+      el.onclick = ()=>abrirDetalheSepse(p.id);
+      el.innerHTML = `
+        <div class="top">
+          <div>
+            <b>${escapeHtml(p.paciente)}</b>
+            <div class="sub">Prontuário ${escapeHtml(p.prontuario)} · ${escapeHtml(p.unidade||'—')}</div>
+          </div>
+          <span class="chip ${p.status==='ABERTO'?'red':p.status==='CONCLUIDO'?'green':'yellow'}">${escapeHtml(p.status)}</span>
+        </div>
+        <div class="metaLine">
+          <span class="chip">${new Date(p.abertura).toLocaleString()}</span>
+        </div>
+      `;
+      box.appendChild(el);
+    });
+  }).listarSepsePorRamal(S.user.ramal);
+}
+
+/* =========================
+   PLANTÃO - Listar todos
+========================= */
+function carregarPlantao(){
+  if (!S.isAdm) return;
+  showLoader(true);
+  const filtros = { status: $('fltStatus').value };
+  google.script.run.withSuccessHandler(list=>{
+    showLoader(false);
+    const box = $('plantaoList');
+    box.innerHTML = '';
+    if (!list || !list.length){
+      box.innerHTML = `<div class="cardrow"><div class="sub">Nenhum protocolo.</div></div>`;
+      return;
+    }
+    list.forEach(p=>{
+      const el = document.createElement('div');
+      el.className = 'cardrow';
+      el.onclick = ()=>abrirDetalheSepse(p.id);
+      el.innerHTML = `
+        <div class="top">
+          <div>
+            <b>${escapeHtml(p.paciente)}</b>
+            <div class="sub">
+              Prontuário ${escapeHtml(p.prontuario)} · ${escapeHtml(p.unidade||'—')} · ${escapeHtml(p.medico||'—')}
+            </div>
+          </div>
+          <span class="chip ${p.status==='ABERTO'?'red':p.status==='CONCLUIDO'?'green':'yellow'}">${escapeHtml(p.status)}</span>
+        </div>
+        <div class="metaLine">
+          <span class="chip">Abertura: ${new Date(p.abertura).toLocaleString()}</span>
+        </div>
+      `;
+      box.appendChild(el);
+    });
+  }).listarSepseParaPlantao(filtros);
+}
+
+/* =========================
+   SEPSE - Detalhe
+========================= */
+function abrirDetalheSepse(id){
+  showLoader(true);
+  S.current.sepseId = id;
+
+  google.script.run.withSuccessHandler(p=>{
+    S.current.sepse = p;
+    google.script.run.withSuccessHandler(tl=>{
+      S.current.timeline = tl;
+      showLoader(false);
+      renderDetalheSepse();
+      go('sepseDetalhe');
+    }).carregarTimelineSepse(id);
+  }).obterProtocoloSepse(id);
+}
+
+function renderDetalheSepse(){
+  const p = S.current.sepse;
+  const tl = S.current.timeline;
+
+  $('dStatus').textContent = p.status;
+  $('dMeta').textContent = `Prontuário ${p.prontuario} · ${p.unidade||'—'}`;
+
+  $('detailCard').innerHTML = `
+    <div class="cardrow">
+      <b>${escapeHtml(p.paciente)}</b>
+      <div class="sub">
+        Leito ${escapeHtml(p.leito||'—')} · Médico ${escapeHtml(p.medico||'—')}
+      </div>
+      <div class="metaLine">
+        <span class="chip">Abertura ${new Date(p.abertura).toLocaleString()}</span>
+      </div>
+    </div>
+  `;
+
+  const acts = [];
+  acts.push(`<button class="btn" onclick="openLigacao()">Registrar ligação</button>`);
+  acts.push(`<button class="btn" onclick="confirmar6h()">Confirmar 6h</button>`);
+
+  if (S.isAdm){
+    acts.push(`<button class="btn danger" onclick="confirmarCancelamento()">Cancelar</button>`);
+    acts.push(`<button class="btn primary" onclick="concluir()">Concluir</button>`);
+  } else {
+    acts.push(`<button class="btn" onclick="solicitarCancelamento()">Solicitar cancelamento</button>`);
+  }
+
+  $('detailActions').innerHTML = acts.join('');
+
+  const box = $('timeline');
+  box.innerHTML = '';
+  if (!tl.length){
+    box.innerHTML = `<div class="ev"><p>Sem eventos ainda.</p></div>`;
+    return;
+  }
+
+  tl.forEach(e=>{
+    const el = document.createElement('div');
+    el.className = 'ev';
+    el.innerHTML = `
+      <div class="h">
+        <b>${escapeHtml(e.tipo)}</b>
+        <span>${new Date(e.data_hora).toLocaleString()}</span>
+      </div>
+      <p>${escapeHtml(e.descricao)}</p>
+      <div class="tags">
+        <span class="chip">${escapeHtml(e.setor||'—')}</span>
+        <span class="chip">Ramal ${escapeHtml(e.ramal||'—')}</span>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+}
+
+/* =========================
+   AÇÕES SEPSE
+========================= */
+function openLigacao(){
+  const sel = $('mSetor');
+  sel.innerHTML = '';
+  S.setoresSepse.forEach(s=>{
+    const o = document.createElement('option');
+    o.value = s.nome;
+    o.textContent = s.nome;
+    sel.appendChild(o);
+  });
+  $('mObs').value = '';
+  $('modalBack').style.display='flex';
+}
+
+function closeModal(){
+  $('modalBack').style.display='none';
+}
+
+function confirmLigacao(){
+  const setor = $('mSetor').value;
+  const resultado = $('mResultado').value;
+  const obs = $('mObs').value.trim();
+
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    closeModal();
+    toast('ok','Ligação registrada',`${setor} · ${resultado}`);
+    abrirDetalheSepse(S.current.sepseId);
+  }).registrarLigacaoSepse(S.current.sepseId, setor, S.user.ramal, resultado, obs);
+}
+
+function confirmar6h(){
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('ok','Confirmação registrada','Contato após 6h registrado.');
+    abrirDetalheSepse(S.current.sepseId);
+  }).confirmarSepse6h(S.current.sepseId, S.user.ramal);
+}
+
+function solicitarCancelamento(){
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('warn','Solicitação enviada','Plantão precisa confirmar.');
+    abrirDetalheSepse(S.current.sepseId);
+  }).solicitarCancelamentoSepse(S.current.sepseId, S.user.ramal);
+}
+
+function confirmarCancelamento(){
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('bad','Protocolo cancelado','Cancelamento confirmado pelo plantão.');
+    go('plantao');
+  }).confirmarCancelamentoSepse(S.current.sepseId, S.user.ramal);
+}
+
+function concluir(){
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('ok','Protocolo concluído','Encerrado com sucesso.');
+    go('plantao');
+  }).concluirSepse(S.current.sepseId, S.user.ramal);
+}
+</script>
+
+</body>
+</html>

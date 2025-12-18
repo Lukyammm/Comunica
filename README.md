@@ -394,9 +394,3 @@ Ele privilegia:
 * e clareza em situações críticas.
 
 Qualquer evolução futura (indicadores, BI, relatórios, integração) já está prevista pela arquitetura.
-
-Se quiser, no próximo passo posso:
-
-* escrever um **manual do plantonista**,
-* ou um **manual do usuário comum**,
-* ou documentar **fluxos clínico-operacionais** do Sepse.

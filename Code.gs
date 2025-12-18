@@ -5,6 +5,17 @@ function _sh(name){ return SpreadsheetApp.getActive().getSheetByName(name); }
 function _vals(name){ return _sh(name).getDataRange().getValues(); }
 function _uuid(){ return Utilities.getUuid(); }
 function _now(){ return new Date(); }
+function _configValue(key, defaultValue){
+  const sh = SpreadsheetApp.getActive().getSheetByName('CONFIG_GERAL');
+  if (!sh) return defaultValue;
+  const data = sh.getDataRange().getValues();
+  for (let i=1;i<data.length;i++){
+    if (String(data[i][0]).trim().toUpperCase() === String(key).trim().toUpperCase()){
+      return data[i][1] !== '' && data[i][1] !== null ? data[i][1] : defaultValue;
+    }
+  }
+  return defaultValue;
+}
 
 function doGet() {
   return HtmlService.createHtmlOutputFromFile('index')
@@ -23,6 +34,9 @@ function validarRamal(ramal) {
 }
 
 function ehPlantao(ramal){
+  const admDefault = _configValue('DEFAULT_ADM_RAMAL', '2077');
+  if (String(ramal) === String(admDefault)) return true;
+
   const data = _vals('USUARIOS_PLANTAO');
   for (let i=1;i<data.length;i++){
     if (String(data[i][0]) === String(ramal) && data[i][2] === true) return true;

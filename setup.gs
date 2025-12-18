@@ -26,6 +26,10 @@ function setupSistemaCompleto() {
     'ramal', 'nome', 'ativo'
   ]);
 
+  criarAba('CONFIG_GERAL', [
+    'chave', 'valor', 'descricao'
+  ]);
+
   criarAba('CONFIG_SETORES_SEPSE', [
     'id_setor', 'nome_setor', 'tipo', 'ativo', 'exige_contato'
   ]);
@@ -98,6 +102,18 @@ function setupSistemaCompleto() {
   /* =====================================================
      DADOS INICIAIS (PRONTOS PRA USO)
   ===================================================== */
+
+  abas.CONFIG_RAMAL.getRange(2,1,1,5).setValues([
+    ['2077','Plantão Administrativo','Administrador',true,'Ramal ADM padrão (editável)']
+  ]);
+
+  abas.USUARIOS_PLANTAO.getRange(2,1,1,3).setValues([
+    ['2077','Plantão ADM padrão',true]
+  ]);
+
+  abas.CONFIG_GERAL.getRange(2,1,1,3).setValues([
+    ['DEFAULT_ADM_RAMAL','2077','Ramal padrão com poderes de Plantão (pode ser alterado)']
+  ]);
 
   abas.CONFIG_STATUS.getRange(2,1,7,5).setValues([
     ['GERAL','ABERTO',1,'#1976d2',false],

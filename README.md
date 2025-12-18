@@ -173,6 +173,12 @@ Determinar quem é ADM (Plantão).
 
 > Se o ramal estiver aqui e ativo → é Plantão Administrativo.
 
+### ADM padrão
+
+* Um ramal **padrão de Plantão** já vem configurado como `2077`.
+* Ele fica registrado tanto em `CONFIG_RAMAL` quanto em `USUARIOS_PLANTAO`.
+* Você pode alterar esse valor na aba `CONFIG_GERAL` (chave `DEFAULT_ADM_RAMAL`).
+
 ---
 
 ## 3. `CONFIG_SETORES_SEPSE`
@@ -225,7 +231,24 @@ Cobrança de prazos (ex: 6h).
 
 ---
 
-## 6. `SOLICITACOES_GERAIS`
+## 6. `CONFIG_GERAL`
+
+Chave-valor para parâmetros simples do sistema.
+
+**Função:**
+Centralizar ajustes rápidos sem mexer no código.
+
+**Colunas:**
+
+* `chave`
+* `valor`
+* `descricao`
+
+> Chave inicial criada pelo setup: `DEFAULT_ADM_RAMAL` (valor padrão `2077`).
+
+---
+
+## 7. `SOLICITACOES_GERAIS`
 
 Registro principal de solicitações comuns.
 
@@ -246,7 +269,7 @@ Painel e rastreabilidade básica.
 
 ---
 
-## 7. `OBITO`
+## 8. `OBITO`
 
 Detalhes específicos de declaração de óbito.
 
@@ -261,7 +284,7 @@ Detalhes específicos de declaração de óbito.
 
 ---
 
-## 8. `INTERCONSULTA`
+## 9. `INTERCONSULTA`
 
 **Colunas:**
 
@@ -273,7 +296,7 @@ Detalhes específicos de declaração de óbito.
 
 ---
 
-## 9. `EXAMES`
+## 10. `EXAMES`
 
 **Colunas:**
 
@@ -286,7 +309,7 @@ Detalhes específicos de declaração de óbito.
 
 ---
 
-## 🔴 10. `SEPSE_PROTOCOLOS`
+## 🔴 11. `SEPSE_PROTOCOLOS`
 
 Tabela principal do Protocolo Sepse.
 
@@ -309,7 +332,7 @@ Guardar o **estado atual**.
 
 ---
 
-## 🔴 11. `SEPSE_EVENTOS`
+## 🔴 12. `SEPSE_EVENTOS`
 
 Timeline completa do sepse.
 
@@ -328,7 +351,7 @@ Registro imutável de tudo que aconteceu.
 
 ---
 
-## 🔴 12. `SEPSE_HISTORICO_EDICOES`
+## 🔴 13. `SEPSE_HISTORICO_EDICOES`
 
 Auditoria de edições.
 
@@ -347,7 +370,7 @@ Saber quem mudou o quê e quando.
 
 ---
 
-## 13. `NOTIFICACOES_LOG`
+## 14. `NOTIFICACOES_LOG`
 
 Log de notificações enviadas.
 
@@ -365,7 +388,7 @@ Provar que o sistema avisou.
 
 ---
 
-## 14. `LOG_SISTEMA` (opcional)
+## 15. `LOG_SISTEMA` (opcional)
 
 Erros e eventos técnicos.
 

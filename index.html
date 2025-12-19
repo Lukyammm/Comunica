@@ -529,7 +529,7 @@
             </div>
             <div>
               <b>Nova Solicitação</b>
-              <small>Óbito, interconsulta, exames</small>
+              <small>Óbito, interconsulta pendente, exame pendente</small>
             </div>
           </div>
           <span class="chip">Geral</span>
@@ -635,12 +635,12 @@
             <label>Tipo</label>
             <select id="gTipo" onchange="atualizarCamposSolicitacao()">
               <option value="OBITO">Declaração de Óbito</option>
-              <option value="INTERCONSULTA">Interconsulta</option>
-              <option value="EXAMES">Exames</option>
+              <option value="INTERCONSULTA">Interconsulta pendente</option>
+              <option value="EXAMES">Exame Pendente</option>
             </select>
           </div>
           <div class="field">
-            <label>Nome do solicitante (opcional)</label>
+            <label>Nome do solicitante</label>
             <input id="gNomeSolicitante" placeholder="Nome ou responsável" />
           </div>
           <div class="field">
@@ -758,8 +758,8 @@
             <select id="fltSolicTipo" class="btn" onchange="carregarSolicitacoesPlantao()">
               <option value="TODOS">Todos os tipos</option>
               <option value="OBITO">Óbito</option>
-              <option value="INTERCONSULTA">Interconsulta</option>
-              <option value="EXAMES">Exames</option>
+              <option value="INTERCONSULTA">Interconsulta pendente</option>
+              <option value="EXAMES">Exame Pendente</option>
             </select>
             <button class="btn" onclick="carregarSolicitacoesPlantao()">Recarregar</button>
           </div>
@@ -947,7 +947,7 @@ function go(page){
     renderHome();
   }
   if (page==='solicitacaoNova'){
-    setHero('Nova Solicitação','Óbito, interconsulta e exames em fluxo direto.');
+    setHero('Nova Solicitação','Óbito, interconsulta pendente e exame pendente em fluxo direto.');
     $('pageSolicitacaoNova').style.display='block';
     atualizarCamposSolicitacao();
   }
@@ -1055,7 +1055,7 @@ function renderHome(){
   const cards = [
     {
       title:'Nova Solicitação',
-      desc:'Óbito, interconsulta e exames em fluxo direto e rastreável.',
+      desc:'Óbito, interconsulta pendente e exame pendente em fluxo direto e rastreável.',
       chip:'Geral',
       chipClass:'blue',
       onClick:()=>go('solicitacaoNova')
@@ -1303,8 +1303,8 @@ function renderDetalheSolicitacao(){
 
 function formatTipoSolicitacao(tipo){
   if (tipo === 'OBITO') return 'Declaração de Óbito';
-  if (tipo === 'INTERCONSULTA') return 'Interconsulta';
-  if (tipo === 'EXAMES') return 'Exames';
+  if (tipo === 'INTERCONSULTA') return 'Interconsulta pendente';
+  if (tipo === 'EXAMES') return 'Exame Pendente';
   return tipo || 'Solicitação';
 }
 

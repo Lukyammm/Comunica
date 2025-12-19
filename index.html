@@ -420,6 +420,10 @@
     border-color:rgba(255,59,48,.55);
     background:linear-gradient(180deg, rgba(255,59,48,.22), rgba(255,59,48,.08));
   }
+  .nav .item.nav-admin{
+    border-color:rgba(191,90,242,.55);
+    background:linear-gradient(180deg, rgba(191,90,242,.22), rgba(191,90,242,.08));
+  }
 
   /* Tables / Lists */
   .list{
@@ -459,6 +463,110 @@
     flex-wrap:wrap;
     margin-top:10px;
   }
+  .admin-grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap:12px;
+  }
+  @media(max-width: 900px){
+    .admin-grid{ grid-template-columns: 1fr; }
+  }
+  .admin-card{
+    padding:14px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.06);
+  }
+  .admin-card h4{
+    margin:0 0 8px 0;
+    font-size:13px;
+    letter-spacing:.2px;
+  }
+  .admin-card p{
+    margin:0 0 12px 0;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .admin-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+  }
+  .admin-table th,
+  .admin-table td{
+    padding:8px 6px;
+    border-bottom:1px solid rgba(255,255,255,.10);
+    text-align:left;
+  }
+  .admin-table th{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    color:var(--muted);
+  }
+  .inline-actions{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+  }
+  .input{
+    width:100%;
+    padding:10px 10px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(0,0,0,.18);
+    color:var(--text);
+    outline:none;
+    font-size:12px;
+  }
+  .admin-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:10px;
+  }
+  .badge{
+    font-size:11px;
+    padding:6px 8px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.08);
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .badge.ok{ border-color:rgba(53,199,89,.35); color:rgba(255,255,255,.92); }
+  .badge.warn{ border-color:rgba(255,204,0,.35); color:rgba(255,255,255,.92); }
+  .badge.bad{ border-color:rgba(255,59,48,.35); color:rgba(255,255,255,.92); }
+  .admin-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .admin-item{
+    padding:10px 12px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.06);
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .admin-item .rowline{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .admin-item .rowline b{ font-size:13px }
+  .admin-item .rowline span{ font-size:11px; color:var(--muted) }
+  .searchbar{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .searchbar .input{ flex:1; min-width:180px; }
 
   /* Timeline */
   .timeline{
@@ -741,6 +849,19 @@
             </div>
           </div>
           <span class="chip green">ADM</span>
+        </div>
+
+        <div class="item nav-admin" id="navAdmin" onclick="go('admin')" style="display:none;">
+          <div class="left">
+            <div class="ic">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+            <div>
+              <b>Administração</b>
+              <small>Controle total do sistema</small>
+            </div>
+          </div>
+          <span class="chip">ADM</span>
         </div>
       </div>
 
@@ -1047,6 +1168,203 @@
         <div class="timeline" id="timeline"></div>
       </div>
 
+      <!-- ADMIN -->
+      <div class="section" id="pageAdmin" style="display:none;">
+        <div class="sectionhead">
+          <h3>Administração do Plantão</h3>
+          <span class="chip blue">governança</span>
+        </div>
+
+        <div class="statusbar" style="margin-bottom:14px;">
+          <div class="status-meta">
+            <div>
+              <div class="status-title">Monitor geral do sistema</div>
+              <div class="status-sub" id="admMonitorSub">Atualizado —</div>
+            </div>
+            <span class="chip blue">Plantão ADM</span>
+          </div>
+          <div class="status-grid">
+            <div class="status-item bad">
+              <b id="admSepseAbertos">—</b>
+              <span>🔴 Sepse abertos</span>
+            </div>
+            <div class="status-item warn">
+              <b id="admPendentes">—</b>
+              <span>🟡 Pendentes 6h</span>
+            </div>
+            <div class="status-item ok">
+              <b id="admLigacoes">—</b>
+              <span>📞 Ligações hoje</span>
+            </div>
+            <div class="status-item warn">
+              <b id="admSetoresSemContato">—</b>
+              <span>❌ Setores sem contato</span>
+            </div>
+            <div class="status-item ok">
+              <b id="admRamaisAtivos">—</b>
+              <span>👥 Ramais ativos</span>
+            </div>
+            <div class="status-item">
+              <b id="admRamaisInativos">—</b>
+              <span>🚫 Ramais inativos</span>
+            </div>
+          </div>
+          <div class="status-foot">Última leitura: <b id="admMonitorUpdated">—</b></div>
+        </div>
+
+        <div class="admin-grid">
+          <div class="admin-card">
+            <h4>Gestão de Ramais</h4>
+            <p>Cadastre, edite e desative ramais sem apagar histórico.</p>
+            <div class="searchbar">
+              <input class="input" id="admRamalBusca" placeholder="Buscar por ramal, setor ou função" oninput="filtrarRamais()" />
+              <button class="btn" onclick="carregarRamais()">Atualizar</button>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label>Ramal</label>
+                <input class="input" id="admRamalNovo" placeholder="Ex: 1120" />
+              </div>
+              <div class="field">
+                <label>Setor</label>
+                <input class="input" id="admRamalSetor" placeholder="Ex: UTI" />
+              </div>
+              <div class="field">
+                <label>Função</label>
+                <input class="input" id="admRamalFuncao" placeholder="Ex: Médico plantonista" />
+              </div>
+              <div class="field">
+                <label>Status</label>
+                <select class="input" id="admRamalAtivo">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+              <div class="field" style="grid-column: span 2;">
+                <label>Observações</label>
+                <input class="input" id="admRamalObs" placeholder="Ex: ramal temporário / em manutenção" />
+              </div>
+            </div>
+            <div class="admin-actions">
+              <button class="btn primary" onclick="salvarRamal()">Salvar ramal</button>
+              <button class="btn" onclick="limparRamalForm()">Limpar</button>
+            </div>
+            <div class="admin-list" id="admRamaisLista"></div>
+          </div>
+
+          <div class="admin-card">
+            <h4>Plantão Administrativo</h4>
+            <p>Controle quem tem poderes de administração e histórico ativo.</p>
+            <div class="row">
+              <div class="field">
+                <label>Ramal</label>
+                <input class="input" id="admPlantaoRamal" placeholder="Ex: 2077" />
+              </div>
+              <div class="field">
+                <label>Nome</label>
+                <input class="input" id="admPlantaoNome" placeholder="Nome do responsável" />
+              </div>
+              <div class="field">
+                <label>Status</label>
+                <select class="input" id="admPlantaoAtivo">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-actions">
+              <button class="btn primary" onclick="salvarPlantao()">Salvar plantão</button>
+              <button class="btn" onclick="limparPlantaoForm()">Limpar</button>
+            </div>
+            <div class="admin-list" id="admPlantaoLista"></div>
+          </div>
+
+          <div class="admin-card">
+            <h4>Configurações do Sepse</h4>
+            <p>Setores ativos, tipo e exigência de contato.</p>
+            <div class="row">
+              <div class="field">
+                <label>ID setor</label>
+                <input class="input" id="admSetorId" placeholder="Ex: LAB" />
+              </div>
+              <div class="field">
+                <label>Nome do setor</label>
+                <input class="input" id="admSetorNome" placeholder="Ex: Laboratório" />
+              </div>
+              <div class="field">
+                <label>Tipo</label>
+                <input class="input" id="admSetorTipo" placeholder="administrativo / apoio / clinico" />
+              </div>
+              <div class="field">
+                <label>Ativo</label>
+                <select class="input" id="admSetorAtivo">
+                  <option value="true">Ativo</option>
+                  <option value="false">Inativo</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Exige contato</label>
+                <select class="input" id="admSetorContato">
+                  <option value="true">Sim</option>
+                  <option value="false">Não</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-actions">
+              <button class="btn primary" onclick="salvarSetor()">Salvar setor</button>
+              <button class="btn" onclick="limparSetorForm()">Limpar</button>
+            </div>
+            <div class="admin-list" id="admSetoresLista"></div>
+          </div>
+
+          <div class="admin-card">
+            <h4>Configuração do Sistema</h4>
+            <p>Chaves operacionais que governam o sistema.</p>
+            <div class="row">
+              <div class="field">
+                <label>Chave</label>
+                <input class="input" id="admConfigChave" placeholder="Ex: DEFAULT_ADM_RAMAL" />
+              </div>
+              <div class="field">
+                <label>Valor</label>
+                <input class="input" id="admConfigValor" placeholder="Ex: 2077" />
+              </div>
+              <div class="field" style="grid-column: span 2;">
+                <label>Descrição</label>
+                <input class="input" id="admConfigDesc" placeholder="Descrição da configuração" />
+              </div>
+            </div>
+            <div class="admin-actions">
+              <button class="btn primary" onclick="salvarConfig()">Salvar configuração</button>
+              <button class="btn" onclick="limparConfigForm()">Limpar</button>
+            </div>
+            <div class="admin-list" id="admConfigLista"></div>
+          </div>
+        </div>
+
+        <div class="sectionhead" style="margin-top:14px;">
+          <h3>Saúde do Sistema</h3>
+          <span class="chip">monitoramento</span>
+        </div>
+        <div class="statusbar">
+          <div class="status-grid">
+            <div class="status-item ok">
+              <b id="admSaudeUltimoEvento">—</b>
+              <span>Último evento</span>
+            </div>
+            <div class="status-item">
+              <b id="admSaudeUltimaNotificacao">—</b>
+              <span>Última notificação</span>
+            </div>
+            <div class="status-item warn">
+              <b id="admSaudeErro">—</b>
+              <span>Último erro</span>
+            </div>
+          </div>
+          <div class="status-foot" id="admSaudeStatus">Sistema ativo.</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1100,6 +1418,7 @@ const S = {
   user: null,
   isAdm: false,
   setoresSepse: [],
+  admin: { ramais: [], plantao: [], setores: [], config: [] },
   current: { page:'home', sepseId:null, sepse:null, timeline:[], solicitacaoId:null, solicitacao:null }
 };
 
@@ -1122,7 +1441,7 @@ function setHero(t,d){ $('heroTitle').textContent=t; $('heroDesc').textContent=d
 function go(page){
   S.current.page = page;
   // hide all pages
-  ['pageHome','pageSolicitacaoNova','pageSolicitacoesMeus','pageSolicitacoesPlantao','pageSolicitacaoDetalhe','pageSepseNovo','pageSepseMeus','pagePlantao','pageSepseDetalhe'].forEach(id => $(id).style.display='none');
+  ['pageHome','pageSolicitacaoNova','pageSolicitacoesMeus','pageSolicitacoesPlantao','pageSolicitacaoDetalhe','pageSepseNovo','pageSepseMeus','pagePlantao','pageSepseDetalhe','pageAdmin'].forEach(id => $(id).style.display='none');
 
   if (page==='home'){
     setHero('Central do Plantão','Estado vivo, ação crítica em destaque.');
@@ -1166,6 +1485,11 @@ function go(page){
     setHero('Protocolo Sepse','Ações rápidas + timeline como diário operacional.');
     $('pageSepseDetalhe').style.display='block';
   }
+  if (page==='admin'){
+    setHero('Administração do Plantão','Controle total: ramais, setores e configurações do sistema.');
+    $('pageAdmin').style.display='block';
+    carregarAdmin();
+  }
 }
 
 function refreshCurrent(){
@@ -1176,6 +1500,7 @@ function refreshCurrent(){
   if (p==='sepseMeus') return carregarMeus();
   if (p==='plantao') return carregarPlantao();
   if (p==='sepseDetalhe' && S.current.sepseId) return abrirDetalheSepse(S.current.sepseId);
+  if (p==='admin') return carregarAdmin();
   renderHome();
 }
 
@@ -1204,6 +1529,7 @@ function doLogin(){
       $('uRamal').textContent = `Ramal ${user.ramal}`;
       $('navPlantao').style.display = S.isAdm ? 'flex' : 'none';
       $('navSolicitacoesPlantao').style.display = S.isAdm ? 'flex' : 'none';
+      $('navAdmin').style.display = S.isAdm ? 'flex' : 'none';
 
       // carregar setores sepse
       google.script.run.withSuccessHandler(list=>{
@@ -1277,6 +1603,7 @@ function renderHome(){
   if (S.isAdm){
     actions.push({ title:'Painel de Solicitações', meta:'Visão ADM', onClick:()=>go('solicitacoesPlantao') });
     actions.push({ title:'Painel do Plantão', meta:'Comando central', onClick:()=>go('plantao') });
+    actions.push({ title:'Administração do Plantão', meta:'Controle total do sistema', onClick:()=>go('admin') });
   }
 
   actions.forEach(a=>{
@@ -1292,6 +1619,360 @@ function renderHome(){
     `;
     actionBox.appendChild(el);
   });
+}
+
+/* =========================
+   ADMIN
+========================= */
+function carregarAdmin(){
+  if (!S.isAdm) return;
+  carregarMonitorAdmin();
+  carregarRamais();
+  carregarPlantaoAdmin();
+  carregarSetoresAdmin();
+  carregarConfigAdmin();
+  carregarSaudeSistema();
+}
+
+function carregarMonitorAdmin(){
+  google.script.run.withSuccessHandler(data=>{
+    if (!data) return;
+    $('admSepseAbertos').textContent = data.sepseAbertos;
+    $('admPendentes').textContent = data.pendentes6h;
+    $('admLigacoes').textContent = data.ligacoesHoje;
+    $('admSetoresSemContato').textContent = data.setoresSemContato;
+    $('admRamaisAtivos').textContent = data.ramaisAtivos;
+    $('admRamaisInativos').textContent = data.ramaisInativos;
+    $('admMonitorSub').textContent = data.resumo || 'Atualizado.';
+    $('admMonitorUpdated').textContent = data.atualizadoEm;
+  }).obterMonitorAdmin();
+}
+
+function carregarRamais(){
+  google.script.run.withSuccessHandler(list=>{
+    S.admin.ramais = list || [];
+    renderRamais(list || []);
+  }).listarRamaisAdmin();
+}
+
+function renderRamais(list){
+  const box = $('admRamaisLista');
+  box.innerHTML = '';
+  if (!list.length){
+    box.innerHTML = `<div class="admin-item"><span class="sub">Nenhum ramal cadastrado.</span></div>`;
+    return;
+  }
+  list.forEach(r=>{
+    const el = document.createElement('div');
+    el.className = 'admin-item';
+    el.innerHTML = `
+      <div class="rowline">
+        <b>Ramal ${escapeHtml(r.ramal)}</b>
+        <span>${escapeHtml(r.setor||'—')} · ${escapeHtml(r.funcao||'—')}</span>
+      </div>
+      <div class="rowline">
+        <span>${escapeHtml(r.observacoes||'Sem observações')}</span>
+        <div class="inline-actions">
+          <span class="badge ${r.ativo ? 'ok' : 'bad'}">${r.ativo ? 'Ativo' : 'Inativo'}</span>
+          <button class="btn" onclick="editarRamal('${escapeHtml(r.ramal)}')">Editar</button>
+          <button class="btn ${r.ativo ? 'danger' : ''}" onclick="toggleRamal('${escapeHtml(r.ramal)}', ${r.ativo ? 'false' : 'true'})">
+            ${r.ativo ? 'Desativar' : 'Ativar'}
+          </button>
+        </div>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+}
+
+function filtrarRamais(){
+  const termo = $('admRamalBusca').value.trim().toLowerCase();
+  const base = S.admin.ramais || [];
+  if (!termo) return renderRamais(base);
+  const filtered = base.filter(r=>{
+    return [r.ramal, r.setor, r.funcao, r.observacoes].some(val => String(val||'').toLowerCase().includes(termo));
+  });
+  renderRamais(filtered);
+}
+
+function editarRamal(ramal){
+  const item = (S.admin.ramais || []).find(r => String(r.ramal) === String(ramal));
+  if (!item) return;
+  $('admRamalNovo').value = item.ramal;
+  $('admRamalSetor').value = item.setor || '';
+  $('admRamalFuncao').value = item.funcao || '';
+  $('admRamalAtivo').value = item.ativo ? 'true' : 'false';
+  $('admRamalObs').value = item.observacoes || '';
+}
+
+function limparRamalForm(){
+  $('admRamalNovo').value = '';
+  $('admRamalSetor').value = '';
+  $('admRamalFuncao').value = '';
+  $('admRamalAtivo').value = 'true';
+  $('admRamalObs').value = '';
+}
+
+function salvarRamal(){
+  const payload = {
+    ramal: $('admRamalNovo').value.trim(),
+    setor: $('admRamalSetor').value.trim(),
+    funcao: $('admRamalFuncao').value.trim(),
+    ativo: $('admRamalAtivo').value === 'true',
+    observacoes: $('admRamalObs').value.trim()
+  };
+  if (!payload.ramal) return toast('warn','Ramal obrigatório','Informe o número do ramal.');
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('ok','Ramal salvo','Cadastro atualizado.');
+    limparRamalForm();
+    carregarRamais();
+    carregarMonitorAdmin();
+  }).salvarRamalAdmin(payload);
+}
+
+function toggleRamal(ramal, ativo){
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('ok','Status atualizado','Ramal atualizado.');
+    carregarRamais();
+    carregarMonitorAdmin();
+  }).atualizarStatusRamalAdmin(ramal, ativo);
+}
+
+function carregarPlantaoAdmin(){
+  google.script.run.withSuccessHandler(list=>{
+    S.admin.plantao = list || [];
+    renderPlantao(list || []);
+  }).listarPlantaoAdmin();
+}
+
+function renderPlantao(list){
+  const box = $('admPlantaoLista');
+  box.innerHTML = '';
+  if (!list.length){
+    box.innerHTML = `<div class="admin-item"><span class="sub">Nenhum ramal ADM cadastrado.</span></div>`;
+    return;
+  }
+  list.forEach(p=>{
+    const el = document.createElement('div');
+    el.className = 'admin-item';
+    el.innerHTML = `
+      <div class="rowline">
+        <b>Ramal ${escapeHtml(p.ramal)}</b>
+        <span>${escapeHtml(p.nome||'Sem nome')}</span>
+      </div>
+      <div class="rowline">
+        <span>Última atualização: ${escapeHtml(p.atualizadoEm||'—')}</span>
+        <div class="inline-actions">
+          <span class="badge ${p.ativo ? 'ok' : 'bad'}">${p.ativo ? 'Ativo' : 'Inativo'}</span>
+          <button class="btn" onclick="editarPlantao('${escapeHtml(p.ramal)}')">Editar</button>
+          <button class="btn ${p.ativo ? 'danger' : ''}" onclick="togglePlantao('${escapeHtml(p.ramal)}', ${p.ativo ? 'false' : 'true'})">
+            ${p.ativo ? 'Desativar' : 'Ativar'}
+          </button>
+        </div>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+}
+
+function editarPlantao(ramal){
+  const item = (S.admin.plantao || []).find(p => String(p.ramal) === String(ramal));
+  if (!item) return;
+  $('admPlantaoRamal').value = item.ramal;
+  $('admPlantaoNome').value = item.nome || '';
+  $('admPlantaoAtivo').value = item.ativo ? 'true' : 'false';
+}
+
+function limparPlantaoForm(){
+  $('admPlantaoRamal').value = '';
+  $('admPlantaoNome').value = '';
+  $('admPlantaoAtivo').value = 'true';
+}
+
+function salvarPlantao(){
+  const payload = {
+    ramal: $('admPlantaoRamal').value.trim(),
+    nome: $('admPlantaoNome').value.trim(),
+    ativo: $('admPlantaoAtivo').value === 'true'
+  };
+  if (!payload.ramal) return toast('warn','Ramal obrigatório','Informe o ramal do plantão.');
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('ok','Plantão salvo','Cadastro atualizado.');
+    limparPlantaoForm();
+    carregarPlantaoAdmin();
+  }).salvarPlantaoAdmin(payload);
+}
+
+function togglePlantao(ramal, ativo){
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('ok','Status atualizado','Plantão atualizado.');
+    carregarPlantaoAdmin();
+  }).atualizarStatusPlantaoAdmin(ramal, ativo);
+}
+
+function carregarSetoresAdmin(){
+  google.script.run.withSuccessHandler(list=>{
+    S.admin.setores = list || [];
+    renderSetores(list || []);
+  }).listarSetoresAdmin();
+}
+
+function renderSetores(list){
+  const box = $('admSetoresLista');
+  box.innerHTML = '';
+  if (!list.length){
+    box.innerHTML = `<div class="admin-item"><span class="sub">Nenhum setor cadastrado.</span></div>`;
+    return;
+  }
+  list.forEach(s=>{
+    const el = document.createElement('div');
+    el.className = 'admin-item';
+    el.innerHTML = `
+      <div class="rowline">
+        <b>${escapeHtml(s.nome)}</b>
+        <span>${escapeHtml(s.id)} · ${escapeHtml(s.tipo||'—')}</span>
+      </div>
+      <div class="rowline">
+        <span>${s.exigeContato ? 'Exige contato' : 'Contato opcional'}</span>
+        <div class="inline-actions">
+          <span class="badge ${s.ativo ? 'ok' : 'bad'}">${s.ativo ? 'Ativo' : 'Inativo'}</span>
+          <button class="btn" onclick="editarSetor('${escapeHtml(s.id)}')">Editar</button>
+          <button class="btn ${s.ativo ? 'danger' : ''}" onclick="toggleSetor('${escapeHtml(s.id)}', ${s.ativo ? 'false' : 'true'})">
+            ${s.ativo ? 'Desativar' : 'Ativar'}
+          </button>
+        </div>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+}
+
+function editarSetor(id){
+  const item = (S.admin.setores || []).find(s => String(s.id) === String(id));
+  if (!item) return;
+  $('admSetorId').value = item.id;
+  $('admSetorNome').value = item.nome || '';
+  $('admSetorTipo').value = item.tipo || '';
+  $('admSetorAtivo').value = item.ativo ? 'true' : 'false';
+  $('admSetorContato').value = item.exigeContato ? 'true' : 'false';
+}
+
+function limparSetorForm(){
+  $('admSetorId').value = '';
+  $('admSetorNome').value = '';
+  $('admSetorTipo').value = '';
+  $('admSetorAtivo').value = 'true';
+  $('admSetorContato').value = 'true';
+}
+
+function salvarSetor(){
+  const payload = {
+    id: $('admSetorId').value.trim(),
+    nome: $('admSetorNome').value.trim(),
+    tipo: $('admSetorTipo').value.trim(),
+    ativo: $('admSetorAtivo').value === 'true',
+    exigeContato: $('admSetorContato').value === 'true'
+  };
+  if (!payload.id || !payload.nome) return toast('warn','Dados obrigatórios','ID e nome do setor são obrigatórios.');
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('ok','Setor salvo','Configuração atualizada.');
+    limparSetorForm();
+    carregarSetoresAdmin();
+    carregarMonitorAdmin();
+  }).salvarSetorAdmin(payload);
+}
+
+function toggleSetor(id, ativo){
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('ok','Status atualizado','Setor atualizado.');
+    carregarSetoresAdmin();
+    carregarMonitorAdmin();
+  }).atualizarStatusSetorAdmin(id, ativo);
+}
+
+function carregarConfigAdmin(){
+  google.script.run.withSuccessHandler(list=>{
+    S.admin.config = list || [];
+    renderConfig(list || []);
+  }).listarConfigGeralAdmin();
+}
+
+function renderConfig(list){
+  const box = $('admConfigLista');
+  box.innerHTML = '';
+  if (!list.length){
+    box.innerHTML = `<div class="admin-item"><span class="sub">Nenhuma configuração cadastrada.</span></div>`;
+    return;
+  }
+  list.forEach(c=>{
+    const el = document.createElement('div');
+    el.className = 'admin-item';
+    el.innerHTML = `
+      <div class="rowline">
+        <b>${escapeHtml(c.chave)}</b>
+        <span>${escapeHtml(c.valor || '—')}</span>
+      </div>
+      <div class="rowline">
+        <span>${escapeHtml(c.descricao || 'Sem descrição')}</span>
+        <div class="inline-actions">
+          <button class="btn" onclick="editarConfig('${escapeHtml(c.chave)}')">Editar</button>
+        </div>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+}
+
+function editarConfig(chave){
+  const item = (S.admin.config || []).find(c => String(c.chave) === String(chave));
+  if (!item) return;
+  $('admConfigChave').value = item.chave;
+  $('admConfigValor').value = item.valor || '';
+  $('admConfigDesc').value = item.descricao || '';
+}
+
+function limparConfigForm(){
+  $('admConfigChave').value = '';
+  $('admConfigValor').value = '';
+  $('admConfigDesc').value = '';
+}
+
+function salvarConfig(){
+  const payload = {
+    chave: $('admConfigChave').value.trim(),
+    valor: $('admConfigValor').value.trim(),
+    descricao: $('admConfigDesc').value.trim()
+  };
+  if (!payload.chave) return toast('warn','Chave obrigatória','Informe a chave da configuração.');
+  showLoader(true);
+  google.script.run.withSuccessHandler(()=>{
+    showLoader(false);
+    toast('ok','Configuração salva','Registro atualizado.');
+    limparConfigForm();
+    carregarConfigAdmin();
+  }).salvarConfigGeralAdmin(payload);
+}
+
+function carregarSaudeSistema(){
+  google.script.run.withSuccessHandler(data=>{
+    if (!data) return;
+    $('admSaudeUltimoEvento').textContent = data.ultimoEvento || '—';
+    $('admSaudeUltimaNotificacao').textContent = data.ultimaNotificacao || '—';
+    $('admSaudeErro').textContent = data.ultimoErro || 'Sem erros';
+    $('admSaudeStatus').textContent = data.status || 'Sistema ativo.';
+  }).obterSaudeSistema();
 }
 
 /* =========================

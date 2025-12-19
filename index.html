@@ -895,11 +895,7 @@ function criarSepse(){
   };
 
   if (!payload.paciente || !payload.prontuario){
-    return toast('
-    'warn',
-    'Dados obrigatórios',
-    'Paciente e prontuário são obrigatórios.'
-  );
+    return toast('warn','Dados obrigatórios','Paciente e prontuário são obrigatórios.');
   }
 
   showLoader(true);

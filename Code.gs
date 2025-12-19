@@ -5,6 +5,12 @@ function _sh(name){ return SpreadsheetApp.getActive().getSheetByName(name); }
 function _vals(name){ return _sh(name).getDataRange().getValues(); }
 function _uuid(){ return Utilities.getUuid(); }
 function _now(){ return new Date(); }
+function _isTrue(value){
+  if (value === true) return true;
+  if (value === false || value === null || value === undefined) return false;
+  const normalized = String(value).trim().toLowerCase();
+  return ['true','1','sim','yes','ativo'].includes(normalized);
+}
 function _configValue(key, defaultValue){
   const sh = SpreadsheetApp.getActive().getSheetByName('CONFIG_GERAL');
   if (!sh) return defaultValue;
@@ -26,7 +32,7 @@ function doGet() {
 function validarRamal(ramal) {
   const data = _vals('CONFIG_RAMAL');
   for (let i=1;i<data.length;i++){
-    if (String(data[i][0]) === String(ramal) && data[i][3] === true){
+    if (String(data[i][0]) === String(ramal) && _isTrue(data[i][3])){
       return { ramal: String(data[i][0]), setor: data[i][1]||'', funcao: data[i][2]||'' };
     }
   }
@@ -39,7 +45,7 @@ function ehPlantao(ramal){
 
   const data = _vals('USUARIOS_PLANTAO');
   for (let i=1;i<data.length;i++){
-    if (String(data[i][0]) === String(ramal) && data[i][2] === true) return true;
+    if (String(data[i][0]) === String(ramal) && _isTrue(data[i][2])) return true;
   }
   return false;
 }
@@ -51,12 +57,12 @@ function listarSetoresSepseAtivos(){
   const data = _vals('CONFIG_SETORES_SEPSE');
   const out = [];
   for (let i=1;i<data.length;i++){
-    if (data[i][3] === true){
+    if (_isTrue(data[i][3])){
       out.push({
         id: data[i][0],
         nome: data[i][1],
         tipo: data[i][2],
-        exigeContato: data[i][4] === true
+        exigeContato: _isTrue(data[i][4])
       });
     }
   }

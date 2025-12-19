@@ -1228,6 +1228,19 @@ function logout(){
   toast('ok','Saiu','Sessão encerrada.');
 }
 
+function setupLoginEnter(){
+  const input = $('inpRamal');
+  if (!input) return;
+  input.addEventListener('keydown', event=>{
+    if (event.key === 'Enter'){
+      event.preventDefault();
+      doLogin();
+    }
+  });
+}
+
+setupLoginEnter();
+
 /* =========================
    HOME
 ========================= */

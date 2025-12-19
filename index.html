@@ -277,6 +277,149 @@
     flex-wrap:wrap;
     margin-top:12px;
   }
+  .statusbar{
+    padding:16px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,.16);
+    background:rgba(0,0,0,.18);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .status-meta{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .status-title{
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:.2px;
+  }
+  .status-sub{
+    font-size:12px;
+    color:var(--muted);
+  }
+  .status-grid{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap:10px;
+  }
+  @media(max-width: 720px){
+    .status-grid{ grid-template-columns: 1fr; }
+  }
+  .status-item{
+    padding:12px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.06);
+  }
+  .status-item b{
+    font-size:20px;
+    display:block;
+    margin-bottom:4px;
+  }
+  .status-item span{
+    font-size:12px;
+    color:var(--muted);
+  }
+  .status-item.bad{ border-color:rgba(255,59,48,.45); }
+  .status-item.warn{ border-color:rgba(255,204,0,.45); }
+  .status-item.ok{ border-color:rgba(53,199,89,.45); }
+  .status-foot{
+    font-size:12px;
+    color:var(--muted);
+  }
+  .heroAction{
+    margin-top:14px;
+    padding:16px;
+    border-radius:22px;
+    border:1px solid rgba(255,255,255,.16);
+    background:linear-gradient(180deg, rgba(255,59,48,.20), rgba(255,59,48,.08));
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .heroAction .heroBtn{
+    appearance:none;
+    border:none;
+    border-radius:18px;
+    padding:14px 22px;
+    font-size:15px;
+    font-weight:600;
+    color:#fff;
+    background:linear-gradient(180deg, rgba(255,59,48,.95), rgba(255,59,48,.70));
+    box-shadow:0 14px 30px rgba(255,59,48,.25);
+    cursor:pointer;
+  }
+  .heroAction .heroBtn:active{ transform:scale(.98) }
+  .heroAction .heroText{
+    font-size:12px;
+    color:var(--muted);
+  }
+  .alertlist{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .alert-item{
+    padding:12px;
+    border-radius:16px;
+    border:1px solid rgba(255,204,0,.40);
+    background:rgba(255,204,0,.10);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    font-size:13px;
+  }
+  .alert-item strong{
+    font-size:13px;
+  }
+  .action-grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap:10px;
+  }
+  @media(max-width: 680px){
+    .action-grid{ grid-template-columns: 1fr; }
+  }
+  .action-card{
+    padding:12px 14px;
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.06);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    cursor:pointer;
+    transition:transform .12s ease, filter .12s ease;
+  }
+  .action-card:hover{ filter:brightness(1.05) }
+  .action-card:active{ transform:scale(.99) }
+  .action-card b{ font-size:14px }
+  .action-card span{ font-size:12px; color:var(--muted) }
+  .nav .item.nav-muted{
+    background:rgba(255,255,255,.04);
+    border-color:rgba(255,255,255,.08);
+    opacity:.8;
+  }
+  .nav .item.nav-secondary{
+    background:rgba(255,255,255,.06);
+  }
+  .nav .item.nav-primary{
+    border-color:rgba(53,199,89,.45);
+    background:linear-gradient(180deg, rgba(53,199,89,.22), rgba(53,199,89,.08));
+  }
+  .nav .item.nav-critical{
+    border-color:rgba(255,59,48,.55);
+    background:linear-gradient(180deg, rgba(255,59,48,.22), rgba(255,59,48,.08));
+  }
 
   /* Tables / Lists */
   .list{
@@ -509,7 +652,7 @@
     <div class="glass side">
       <div class="navtitle">Ações</div>
       <div class="nav">
-        <div class="item" onclick="go('home')">
+        <div class="item nav-muted" onclick="go('home')">
           <div class="left">
             <div class="ic">
               <svg viewBox="0 0 24 24" fill="none"><path d="M10 20v-6h4v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 11l8-7 8 7v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -522,7 +665,7 @@
           <span class="chip blue">App</span>
         </div>
 
-        <div class="item" onclick="go('solicitacaoNova')">
+        <div class="item nav-secondary" onclick="go('solicitacaoNova')">
           <div class="left">
             <div class="ic">
               <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -535,7 +678,7 @@
           <span class="chip">Geral</span>
         </div>
 
-        <div class="item" onclick="go('solicitacoesMeus')">
+        <div class="item nav-secondary" onclick="go('solicitacoesMeus')">
           <div class="left">
             <div class="ic">
               <svg viewBox="0 0 24 24" fill="none"><path d="M7 7h10M7 12h10M7 17h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -548,7 +691,7 @@
           <span class="chip">Lista</span>
         </div>
 
-        <div class="item" id="navSolicitacoesPlantao" onclick="go('solicitacoesPlantao')" style="display:none;">
+        <div class="item nav-primary" id="navSolicitacoesPlantao" onclick="go('solicitacoesPlantao')" style="display:none;">
           <div class="left">
             <div class="ic">
               <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h16M4 19h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -561,7 +704,7 @@
           <span class="chip green">ADM</span>
         </div>
 
-        <div class="item" onclick="go('sepseNovo')">
+        <div class="item nav-critical" onclick="go('sepseNovo')">
           <div class="left">
             <div class="ic">
               <svg viewBox="0 0 24 24" fill="none"><path d="M12 2v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 22v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4.93 4.93l4.24 4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14.83 14.83l4.24 4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M2 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M22 12h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4.93 19.07l4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14.83 9.17l4.24-4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -574,7 +717,7 @@
           <span class="chip red">Crítico</span>
         </div>
 
-        <div class="item" onclick="go('sepseMeus')">
+        <div class="item nav-secondary" onclick="go('sepseMeus')">
           <div class="left">
             <div class="ic">
               <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2"/></svg>
@@ -587,7 +730,7 @@
           <span class="chip">Lista</span>
         </div>
 
-        <div class="item" id="navPlantao" onclick="go('plantao')" style="display:none;">
+        <div class="item nav-primary" id="navPlantao" onclick="go('plantao')" style="display:none;">
           <div class="left">
             <div class="ic">
               <svg viewBox="0 0 24 24" fill="none"><path d="M4 19V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12" stroke="currentColor" stroke-width="2"/><path d="M6 9h12M6 13h8M6 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -618,10 +761,50 @@
       <!-- HOME -->
       <div class="section" id="pageHome">
         <div class="sectionhead">
-          <h3>Visão rápida</h3>
-          <span class="chip">Fluxo plantão-friendly</span>
+          <h3>Estado do plantão</h3>
+          <span class="chip">tempo real</span>
         </div>
-        <div class="list" id="homeCards"></div>
+        <div class="statusbar">
+          <div class="status-meta">
+            <div>
+              <div class="status-title" id="homeShiftTitle">Plantão Administrativo — Ramal 2077</div>
+              <div class="status-sub" id="homeShiftTime">Turno atual: 07:00–19:00</div>
+            </div>
+            <span class="chip blue" id="homeShiftUnit">Centro de comando</span>
+          </div>
+          <div class="status-grid">
+            <div class="status-item bad">
+              <b id="homeSepseAbertos">—</b>
+              <span>🔴 Sepse abertos</span>
+            </div>
+            <div class="status-item warn">
+              <b id="homePendentes">—</b>
+              <span>🟡 Pendentes 6h</span>
+            </div>
+            <div class="status-item ok">
+              <b id="homeConcluidos">—</b>
+              <span>🟢 Concluídos hoje</span>
+            </div>
+          </div>
+          <div class="status-foot">Última atualização: <b id="homeUpdated">—</b></div>
+        </div>
+
+        <div class="heroAction">
+          <button class="heroBtn" onclick="go('sepseNovo')">+ Abrir Protocolo Sepse</button>
+          <div class="heroText">Ação crítica · registro imediato</div>
+        </div>
+
+        <div class="sectionhead" style="margin-top:14px;">
+          <h3>Atenção agora</h3>
+          <span class="chip yellow">alertas</span>
+        </div>
+        <div class="alertlist" id="homeAlerts"></div>
+
+        <div class="sectionhead" style="margin-top:14px;">
+          <h3>Ações rápidas</h3>
+          <span class="chip">secundário</span>
+        </div>
+        <div class="action-grid" id="homeActions"></div>
       </div>
 
       <!-- SOLICITAÇÃO NOVA -->
@@ -942,7 +1125,7 @@ function go(page){
   ['pageHome','pageSolicitacaoNova','pageSolicitacoesMeus','pageSolicitacoesPlantao','pageSolicitacaoDetalhe','pageSepseNovo','pageSepseMeus','pagePlantao','pageSepseDetalhe'].forEach(id => $(id).style.display='none');
 
   if (page==='home'){
-    setHero('Início','Abra solicitações gerais ou protocolos críticos de sepse. Tudo rastreável.');
+    setHero('Central do Plantão','Estado vivo, ação crítica em destaque.');
     $('pageHome').style.display='block';
     renderHome();
   }
@@ -1049,72 +1232,53 @@ function logout(){
    HOME
 ========================= */
 function renderHome(){
-  const box = $('homeCards');
-  box.innerHTML = '';
+  $('homeShiftTitle').textContent = `${S.isAdm ? 'Plantão Administrativo' : 'Plantão Assistencial'} — Ramal ${S.user?.ramal || '—'}`;
+  $('homeShiftTime').textContent = 'Turno atual: 07:00–19:00';
+  $('homeShiftUnit').textContent = S.user?.setor || 'Centro de comando';
+  $('homeSepseAbertos').textContent = '3';
+  $('homePendentes').textContent = '1';
+  $('homeConcluidos').textContent = '2';
+  $('homeUpdated').textContent = 'há 2 min';
 
-  const cards = [
-    {
-      title:'Nova Solicitação',
-      desc:'Óbito, interconsulta pendente e exame pendente em fluxo direto e rastreável.',
-      chip:'Geral',
-      chipClass:'blue',
-      onClick:()=>go('solicitacaoNova')
-    },
-    {
-      title:'Minhas Solicitações',
-      desc:'Veja as solicitações gerais abertas no seu ramal.',
-      chip:'Lista',
-      chipClass:'',
-      onClick:()=>go('solicitacoesMeus')
-    },
-    {
-      title:'Abrir Protocolo Sepse',
-      desc:'Inicia protocolo com dados mínimos. O resto vira evento na timeline.',
-      chip:'Crítico',
-      chipClass:'red',
-      onClick:()=>go('sepseNovo')
-    },
-    {
-      title:'Meus Protocolos',
-      desc:'Veja o que você abriu e acompanhe o andamento simplificado.',
-      chip:'Lista',
-      chipClass:'',
-      onClick:()=>go('sepseMeus')
-    }
+  const alertBox = $('homeAlerts');
+  alertBox.innerHTML = '';
+  const alerts = [
+    { text:'⏰ 1 protocolo precisa confirmação 6h', level:'warn' },
+    { text:'📞 Laboratório sem contato há 40 min', level:'warn' },
+    { text:'❗ Sepse aberto há > 2h', level:'warn' }
   ];
-
-  if (S.isAdm){
-    cards.push({
-      title:'Painel de Solicitações',
-      desc:'Todos os módulos gerais em uma visão única.',
-      chip:'ADM',
-      chipClass:'green',
-      onClick:()=>go('solicitacoesPlantao')
-    });
-    cards.push({
-      title:'Painel do Plantão',
-      desc:'Tudo em um lugar: filtros, detalhe e timeline completa.',
-      chip:'ADM',
-      chipClass:'green',
-      onClick:()=>go('plantao')
-    });
-  }
-
-  for (const c of cards){
+  alerts.forEach(a=>{
     const el = document.createElement('div');
-    el.className = 'cardrow';
-    el.onclick = c.onClick;
-    el.innerHTML = `
-      <div class="top">
-        <div>
-          <b>${escapeHtml(c.title)}</b>
-          <div class="sub">${escapeHtml(c.desc)}</div>
-        </div>
-        <span class="chip ${c.chipClass||''}">${escapeHtml(c.chip)}</span>
-      </div>
-    `;
-    box.appendChild(el);
+    el.className = 'alert-item';
+    el.innerHTML = `<strong>${escapeHtml(a.text)}</strong>`;
+    alertBox.appendChild(el);
+  });
+
+  const actionBox = $('homeActions');
+  actionBox.innerHTML = '';
+  const actions = [
+    { title:'Nova Solicitação', meta:'Óbito · Interconsulta · Exames', onClick:()=>go('solicitacaoNova') },
+    { title:'Minhas Solicitações', meta:'Somente deste ramal', onClick:()=>go('solicitacoesMeus') },
+    { title:'Meus Protocolos', meta:'Acompanhamento rápido', onClick:()=>go('sepseMeus') }
+  ];
+  if (S.isAdm){
+    actions.push({ title:'Painel de Solicitações', meta:'Visão ADM', onClick:()=>go('solicitacoesPlantao') });
+    actions.push({ title:'Painel do Plantão', meta:'Comando central', onClick:()=>go('plantao') });
   }
+
+  actions.forEach(a=>{
+    const el = document.createElement('div');
+    el.className = 'action-card';
+    el.onclick = a.onClick;
+    el.innerHTML = `
+      <div>
+        <b>${escapeHtml(a.title)}</b>
+        <div><span>${escapeHtml(a.meta)}</span></div>
+      </div>
+      <span class="chip">Ir</span>
+    `;
+    actionBox.appendChild(el);
+  });
 }
 
 /* =========================

@@ -70,6 +70,179 @@ function listarSetoresSepseAtivos(){
 }
 
 /* =========================
+   SOLICITAÇÕES GERAIS
+========================= */
+function criarSolicitacaoGeral(payload){
+  const id = _uuid();
+  const tipo = String(payload.tipo || '').toUpperCase();
+  _sh('SOLICITACOES_GERAIS').appendRow([
+    id,
+    tipo,
+    payload.nomeSolicitante || payload.setor || '',
+    payload.setor || '',
+    String(payload.ramal || ''),
+    _now(),
+    'ABERTO',
+    payload.prioridade || 'NORMAL',
+    payload.observacao || ''
+  ]);
+
+  if (tipo === 'OBITO'){
+    _sh('OBITO').appendRow([
+      id,
+      payload.leito || '',
+      payload.clinica || '',
+      payload.dataObito || '',
+      payload.prontuario || '',
+      payload.paciente || ''
+    ]);
+  }
+  if (tipo === 'INTERCONSULTA'){
+    _sh('INTERCONSULTA').appendRow([
+      id,
+      payload.prontuario || '',
+      payload.clinica || '',
+      payload.paciente || '',
+      payload.especialidade || ''
+    ]);
+  }
+  if (tipo === 'EXAMES'){
+    _sh('EXAMES').appendRow([
+      id,
+      payload.prontuario || '',
+      payload.paciente || '',
+      payload.exame || '',
+      payload.dataSolicitacao || '',
+      payload.solicitante || ''
+    ]);
+  }
+
+  return id;
+}
+
+function listarSolicitacoesPorRamal(ramal){
+  const data = _vals('SOLICITACOES_GERAIS');
+  const out = [];
+  for (let i=1;i<data.length;i++){
+    if (String(data[i][4]) === String(ramal)){
+      out.push({
+        id: data[i][0],
+        tipo: data[i][1],
+        nomeSolicitante: data[i][2],
+        setor: data[i][3],
+        ramal: data[i][4],
+        abertura: data[i][5],
+        status: data[i][6],
+        prioridade: data[i][7],
+        observacao: data[i][8]
+      });
+    }
+  }
+  return out;
+}
+
+function listarSolicitacoesParaPlantao(filtros){
+  const data = _vals('SOLICITACOES_GERAIS');
+  const out = [];
+  for (let i=1;i<data.length;i++){
+    out.push({
+      id: data[i][0],
+      tipo: data[i][1],
+      nomeSolicitante: data[i][2],
+      setor: data[i][3],
+      ramal: data[i][4],
+      abertura: data[i][5],
+      status: data[i][6],
+      prioridade: data[i][7],
+      observacao: data[i][8]
+    });
+  }
+
+  if (filtros){
+    let filtered = out;
+    if (filtros.status && filtros.status !== 'TODOS'){
+      filtered = filtered.filter(x => String(x.status) === String(filtros.status));
+    }
+    if (filtros.tipo && filtros.tipo !== 'TODOS'){
+      filtered = filtered.filter(x => String(x.tipo) === String(filtros.tipo));
+    }
+    return filtered;
+  }
+  return out;
+}
+
+function obterSolicitacaoDetalhe(idSolicitacao){
+  const data = _vals('SOLICITACOES_GERAIS');
+  let base = null;
+  for (let i=1;i<data.length;i++){
+    if (data[i][0] === idSolicitacao){
+      base = {
+        id: data[i][0],
+        tipo: data[i][1],
+        nomeSolicitante: data[i][2],
+        setor: data[i][3],
+        ramal: data[i][4],
+        abertura: data[i][5],
+        status: data[i][6],
+        prioridade: data[i][7],
+        observacao: data[i][8]
+      };
+      break;
+    }
+  }
+  if (!base) return null;
+
+  if (base.tipo === 'OBITO'){
+    const rows = _vals('OBITO');
+    for (let i=1;i<rows.length;i++){
+      if (rows[i][0] === idSolicitacao){
+        base.detalhe = {
+          leito: rows[i][1],
+          clinica: rows[i][2],
+          dataObito: rows[i][3],
+          prontuario: rows[i][4],
+          paciente: rows[i][5]
+        };
+        break;
+      }
+    }
+  }
+
+  if (base.tipo === 'INTERCONSULTA'){
+    const rows = _vals('INTERCONSULTA');
+    for (let i=1;i<rows.length;i++){
+      if (rows[i][0] === idSolicitacao){
+        base.detalhe = {
+          prontuario: rows[i][1],
+          clinica: rows[i][2],
+          paciente: rows[i][3],
+          especialidade: rows[i][4]
+        };
+        break;
+      }
+    }
+  }
+
+  if (base.tipo === 'EXAMES'){
+    const rows = _vals('EXAMES');
+    for (let i=1;i<rows.length;i++){
+      if (rows[i][0] === idSolicitacao){
+        base.detalhe = {
+          prontuario: rows[i][1],
+          paciente: rows[i][2],
+          exame: rows[i][3],
+          dataSolicitacao: rows[i][4],
+          solicitante: rows[i][5]
+        };
+        break;
+      }
+    }
+  }
+
+  return base;
+}
+
+/* =========================
    SEPSE - CRUD
 ========================= */
 function criarProtocoloSepse(payload){

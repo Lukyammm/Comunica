@@ -522,6 +522,45 @@
           <span class="chip blue">App</span>
         </div>
 
+        <div class="item" onclick="go('solicitacaoNova')">
+          <div class="left">
+            <div class="ic">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <b>Nova Solicitação</b>
+              <small>Óbito, interconsulta, exames</small>
+            </div>
+          </div>
+          <span class="chip">Geral</span>
+        </div>
+
+        <div class="item" onclick="go('solicitacoesMeus')">
+          <div class="left">
+            <div class="ic">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M7 7h10M7 12h10M7 17h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <b>Minhas Solicitações</b>
+              <small>Somente as suas</small>
+            </div>
+          </div>
+          <span class="chip">Lista</span>
+        </div>
+
+        <div class="item" id="navSolicitacoesPlantao" onclick="go('solicitacoesPlantao')" style="display:none;">
+          <div class="left">
+            <div class="ic">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h16M4 19h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <b>Painel Solicitações</b>
+              <small>Todos os módulos gerais</small>
+            </div>
+          </div>
+          <span class="chip green">ADM</span>
+        </div>
+
         <div class="item" onclick="go('sepseNovo')">
           <div class="left">
             <div class="ic">
@@ -583,6 +622,161 @@
           <span class="chip">Fluxo plantão-friendly</span>
         </div>
         <div class="list" id="homeCards"></div>
+      </div>
+
+      <!-- SOLICITAÇÃO NOVA -->
+      <div class="section" id="pageSolicitacaoNova" style="display:none;">
+        <div class="sectionhead">
+          <h3>Nova Solicitação</h3>
+          <span class="chip">Módulos gerais</span>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Tipo</label>
+            <select id="gTipo" onchange="atualizarCamposSolicitacao()">
+              <option value="OBITO">Declaração de Óbito</option>
+              <option value="INTERCONSULTA">Interconsulta</option>
+              <option value="EXAMES">Exames</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nome do solicitante (opcional)</label>
+            <input id="gNomeSolicitante" placeholder="Nome ou responsável" />
+          </div>
+          <div class="field">
+            <label>Prioridade</label>
+            <select id="gPrioridade">
+              <option value="NORMAL">Normal</option>
+              <option value="ALTA">Alta</option>
+              <option value="CRITICA">Crítica</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Observação</label>
+            <input id="gObservacao" placeholder="Opcional" />
+          </div>
+        </div>
+
+        <div id="grpObito" style="margin-top:12px;">
+          <div class="row">
+            <div class="field">
+              <label>Paciente</label>
+              <input id="gObitoPaciente" placeholder="Nome do paciente" />
+            </div>
+            <div class="field">
+              <label>Prontuário</label>
+              <input id="gObitoProntuario" placeholder="Número do prontuário" />
+            </div>
+            <div class="field">
+              <label>Leito</label>
+              <input id="gObitoLeito" placeholder="Ex: B514" />
+            </div>
+            <div class="field">
+              <label>Clínica</label>
+              <input id="gObitoClinica" placeholder="Ex: Clínica médica" />
+            </div>
+            <div class="field">
+              <label>Data do óbito</label>
+              <input id="gObitoData" type="datetime-local" />
+            </div>
+          </div>
+        </div>
+
+        <div id="grpInterconsulta" style="margin-top:12px; display:none;">
+          <div class="row">
+            <div class="field">
+              <label>Paciente</label>
+              <input id="gInterPaciente" placeholder="Nome do paciente" />
+            </div>
+            <div class="field">
+              <label>Prontuário</label>
+              <input id="gInterProntuario" placeholder="Número do prontuário" />
+            </div>
+            <div class="field">
+              <label>Clínica</label>
+              <input id="gInterClinica" placeholder="Ex: Clínica médica" />
+            </div>
+            <div class="field">
+              <label>Especialidade</label>
+              <input id="gInterEspecialidade" placeholder="Ex: Cardiologia" />
+            </div>
+          </div>
+        </div>
+
+        <div id="grpExames" style="margin-top:12px; display:none;">
+          <div class="row">
+            <div class="field">
+              <label>Paciente</label>
+              <input id="gExamePaciente" placeholder="Nome do paciente" />
+            </div>
+            <div class="field">
+              <label>Prontuário</label>
+              <input id="gExameProntuario" placeholder="Número do prontuário" />
+            </div>
+            <div class="field">
+              <label>Exame</label>
+              <input id="gExameNome" placeholder="Ex: Tomografia, Hemograma" />
+            </div>
+            <div class="field">
+              <label>Data da solicitação</label>
+              <input id="gExameData" type="datetime-local" />
+            </div>
+            <div class="field">
+              <label>Solicitante</label>
+              <input id="gExameSolicitante" placeholder="Nome do solicitante" />
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" onclick="criarSolicitacao()">Abrir solicitação</button>
+          <button class="btn" onclick="go('home')">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- SOLICITAÇÕES MEUS -->
+      <div class="section" id="pageSolicitacoesMeus" style="display:none;">
+        <div class="sectionhead">
+          <h3>Minhas Solicitações</h3>
+          <span class="chip">por ramal</span>
+        </div>
+        <div class="list" id="solicitacoesMeusList"></div>
+      </div>
+
+      <!-- SOLICITAÇÕES PLANTAO -->
+      <div class="section" id="pageSolicitacoesPlantao" style="display:none;">
+        <div class="sectionhead">
+          <h3>Painel de Solicitações</h3>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <select id="fltSolicStatus" class="btn" onchange="carregarSolicitacoesPlantao()">
+              <option value="TODOS">Todos os status</option>
+              <option value="ABERTO">Aberto</option>
+              <option value="EM ANDAMENTO">Em andamento</option>
+              <option value="CONCLUIDO">Concluído</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+            <select id="fltSolicTipo" class="btn" onchange="carregarSolicitacoesPlantao()">
+              <option value="TODOS">Todos os tipos</option>
+              <option value="OBITO">Óbito</option>
+              <option value="INTERCONSULTA">Interconsulta</option>
+              <option value="EXAMES">Exames</option>
+            </select>
+            <button class="btn" onclick="carregarSolicitacoesPlantao()">Recarregar</button>
+          </div>
+        </div>
+        <div class="list" id="solicitacoesPlantaoList"></div>
+      </div>
+
+      <!-- SOLICITAÇÃO DETALHE -->
+      <div class="section" id="pageSolicitacaoDetalhe" style="display:none;">
+        <div class="sectionhead">
+          <h3>Solicitação</h3>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <span class="chip blue" id="gDetalheTipo">—</span>
+            <span class="chip" id="gDetalheStatus">—</span>
+          </div>
+        </div>
+        <div id="gDetalheCard"></div>
       </div>
 
       <!-- SEPSE NOVO -->
@@ -723,7 +917,7 @@ const S = {
   user: null,
   isAdm: false,
   setoresSepse: [],
-  current: { page:'home', sepseId:null, sepse:null, timeline:[] }
+  current: { page:'home', sepseId:null, sepse:null, timeline:[], solicitacaoId:null, solicitacao:null }
 };
 
 /* =========================
@@ -745,12 +939,31 @@ function setHero(t,d){ $('heroTitle').textContent=t; $('heroDesc').textContent=d
 function go(page){
   S.current.page = page;
   // hide all pages
-  ['pageHome','pageSepseNovo','pageSepseMeus','pagePlantao','pageSepseDetalhe'].forEach(id => $(id).style.display='none');
+  ['pageHome','pageSolicitacaoNova','pageSolicitacoesMeus','pageSolicitacoesPlantao','pageSolicitacaoDetalhe','pageSepseNovo','pageSepseMeus','pagePlantao','pageSepseDetalhe'].forEach(id => $(id).style.display='none');
 
   if (page==='home'){
-    setHero('Início','Abra Sepse e registre ações em timeline. Plantão recebe tudo automaticamente.');
+    setHero('Início','Abra solicitações gerais ou protocolos críticos de sepse. Tudo rastreável.');
     $('pageHome').style.display='block';
     renderHome();
+  }
+  if (page==='solicitacaoNova'){
+    setHero('Nova Solicitação','Óbito, interconsulta e exames em fluxo direto.');
+    $('pageSolicitacaoNova').style.display='block';
+    atualizarCamposSolicitacao();
+  }
+  if (page==='solicitacoesMeus'){
+    setHero('Minhas Solicitações','O que você abriu pelo seu ramal.');
+    $('pageSolicitacoesMeus').style.display='block';
+    carregarSolicitacoesMeus();
+  }
+  if (page==='solicitacoesPlantao'){
+    setHero('Painel de Solicitações','Visão global de todas as solicitações gerais.');
+    $('pageSolicitacoesPlantao').style.display='block';
+    carregarSolicitacoesPlantao();
+  }
+  if (page==='solicitacaoDetalhe'){
+    setHero('Solicitação','Detalhes completos da solicitação.');
+    $('pageSolicitacaoDetalhe').style.display='block';
   }
   if (page==='sepseNovo'){
     setHero('Abrir Sepse','Preencha o mínimo. O resto vira evento na timeline, sem bagunça.');
@@ -774,6 +987,9 @@ function go(page){
 
 function refreshCurrent(){
   const p = S.current.page;
+  if (p==='solicitacoesMeus') return carregarSolicitacoesMeus();
+  if (p==='solicitacoesPlantao') return carregarSolicitacoesPlantao();
+  if (p==='solicitacaoDetalhe' && S.current.solicitacaoId) return abrirDetalheSolicitacao(S.current.solicitacaoId);
   if (p==='sepseMeus') return carregarMeus();
   if (p==='plantao') return carregarPlantao();
   if (p==='sepseDetalhe' && S.current.sepseId) return abrirDetalheSepse(S.current.sepseId);
@@ -804,6 +1020,7 @@ function doLogin(){
       $('uSetor').textContent = user.setor || '—';
       $('uRamal').textContent = `Ramal ${user.ramal}`;
       $('navPlantao').style.display = S.isAdm ? 'flex' : 'none';
+      $('navSolicitacoesPlantao').style.display = S.isAdm ? 'flex' : 'none';
 
       // carregar setores sepse
       google.script.run.withSuccessHandler(list=>{
@@ -820,7 +1037,7 @@ function doLogin(){
 }
 
 function logout(){
-  S.user=null; S.isAdm=false; S.setoresSepse=[]; S.current={page:'home',sepseId:null,sepse:null,timeline:[]};
+  S.user=null; S.isAdm=false; S.setoresSepse=[]; S.current={page:'home',sepseId:null,sepse:null,timeline:[],solicitacaoId:null,solicitacao:null};
   $('viewApp').style.display='none';
   $('topbar').style.display='none';
   $('viewLogin').style.display='block';
@@ -836,6 +1053,20 @@ function renderHome(){
   box.innerHTML = '';
 
   const cards = [
+    {
+      title:'Nova Solicitação',
+      desc:'Óbito, interconsulta e exames em fluxo direto e rastreável.',
+      chip:'Geral',
+      chipClass:'blue',
+      onClick:()=>go('solicitacaoNova')
+    },
+    {
+      title:'Minhas Solicitações',
+      desc:'Veja as solicitações gerais abertas no seu ramal.',
+      chip:'Lista',
+      chipClass:'',
+      onClick:()=>go('solicitacoesMeus')
+    },
     {
       title:'Abrir Protocolo Sepse',
       desc:'Inicia protocolo com dados mínimos. O resto vira evento na timeline.',
@@ -853,6 +1084,13 @@ function renderHome(){
   ];
 
   if (S.isAdm){
+    cards.push({
+      title:'Painel de Solicitações',
+      desc:'Todos os módulos gerais em uma visão única.',
+      chip:'ADM',
+      chipClass:'green',
+      onClick:()=>go('solicitacoesPlantao')
+    });
     cards.push({
       title:'Painel do Plantão',
       desc:'Tudo em um lugar: filtros, detalhe e timeline completa.',
@@ -877,6 +1115,197 @@ function renderHome(){
     `;
     box.appendChild(el);
   }
+}
+
+/* =========================
+   SOLICITAÇÕES GERAIS
+========================= */
+function atualizarCamposSolicitacao(){
+  const tipo = $('gTipo').value;
+  $('grpObito').style.display = tipo === 'OBITO' ? 'block' : 'none';
+  $('grpInterconsulta').style.display = tipo === 'INTERCONSULTA' ? 'block' : 'none';
+  $('grpExames').style.display = tipo === 'EXAMES' ? 'block' : 'none';
+}
+
+function criarSolicitacao(){
+  const tipo = $('gTipo').value;
+  const payload = {
+    tipo,
+    nomeSolicitante: $('gNomeSolicitante').value.trim(),
+    prioridade: $('gPrioridade').value,
+    observacao: $('gObservacao').value.trim(),
+    setor: S.user?.setor || '',
+    ramal: S.user?.ramal || ''
+  };
+
+  if (tipo === 'OBITO'){
+    payload.paciente = $('gObitoPaciente').value.trim();
+    payload.prontuario = $('gObitoProntuario').value.trim();
+    payload.leito = $('gObitoLeito').value.trim();
+    payload.clinica = $('gObitoClinica').value.trim();
+    payload.dataObito = $('gObitoData').value;
+    if (!payload.paciente || !payload.prontuario){
+      return toast('warn','Dados obrigatórios','Paciente e prontuário são obrigatórios.');
+    }
+  }
+  if (tipo === 'INTERCONSULTA'){
+    payload.paciente = $('gInterPaciente').value.trim();
+    payload.prontuario = $('gInterProntuario').value.trim();
+    payload.clinica = $('gInterClinica').value.trim();
+    payload.especialidade = $('gInterEspecialidade').value.trim();
+    if (!payload.paciente || !payload.prontuario || !payload.especialidade){
+      return toast('warn','Dados obrigatórios','Paciente, prontuário e especialidade são obrigatórios.');
+    }
+  }
+  if (tipo === 'EXAMES'){
+    payload.paciente = $('gExamePaciente').value.trim();
+    payload.prontuario = $('gExameProntuario').value.trim();
+    payload.exame = $('gExameNome').value.trim();
+    payload.dataSolicitacao = $('gExameData').value;
+    payload.solicitante = $('gExameSolicitante').value.trim();
+    if (!payload.paciente || !payload.prontuario || !payload.exame){
+      return toast('warn','Dados obrigatórios','Paciente, prontuário e exame são obrigatórios.');
+    }
+  }
+
+  showLoader(true);
+  google.script.run.withSuccessHandler(id=>{
+    showLoader(false);
+    toast('ok','Solicitação aberta','Registro salvo com sucesso.');
+    abrirDetalheSolicitacao(id);
+  }).criarSolicitacaoGeral(payload);
+}
+
+function carregarSolicitacoesMeus(){
+  showLoader(true);
+  google.script.run.withSuccessHandler(list=>{
+    showLoader(false);
+    const box = $('solicitacoesMeusList');
+    box.innerHTML = '';
+    if (!list || !list.length){
+      box.innerHTML = `<div class="cardrow"><div class="sub">Nenhuma solicitação encontrada.</div></div>`;
+      return;
+    }
+    list.forEach(s=>{
+      const el = document.createElement('div');
+      el.className = 'cardrow';
+      el.onclick = ()=>abrirDetalheSolicitacao(s.id);
+      el.innerHTML = `
+        <div class="top">
+          <div>
+            <b>${escapeHtml(formatTipoSolicitacao(s.tipo))}</b>
+            <div class="sub">${escapeHtml(s.setor||'—')} · Ramal ${escapeHtml(s.ramal||'—')}</div>
+          </div>
+          <span class="chip">${escapeHtml(s.status)}</span>
+        </div>
+        <div class="metaLine">
+          <span class="chip">${new Date(s.abertura).toLocaleString()}</span>
+          <span class="chip">${escapeHtml(s.prioridade||'NORMAL')}</span>
+        </div>
+      `;
+      box.appendChild(el);
+    });
+  }).listarSolicitacoesPorRamal(S.user.ramal);
+}
+
+function carregarSolicitacoesPlantao(){
+  if (!S.isAdm) return;
+  showLoader(true);
+  const filtros = {
+    status: $('fltSolicStatus').value,
+    tipo: $('fltSolicTipo').value
+  };
+  google.script.run.withSuccessHandler(list=>{
+    showLoader(false);
+    const box = $('solicitacoesPlantaoList');
+    box.innerHTML = '';
+    if (!list || !list.length){
+      box.innerHTML = `<div class="cardrow"><div class="sub">Nenhuma solicitação.</div></div>`;
+      return;
+    }
+    list.forEach(s=>{
+      const el = document.createElement('div');
+      el.className = 'cardrow';
+      el.onclick = ()=>abrirDetalheSolicitacao(s.id);
+      el.innerHTML = `
+        <div class="top">
+          <div>
+            <b>${escapeHtml(formatTipoSolicitacao(s.tipo))}</b>
+            <div class="sub">${escapeHtml(s.setor||'—')} · Ramal ${escapeHtml(s.ramal||'—')}</div>
+          </div>
+          <span class="chip">${escapeHtml(s.status)}</span>
+        </div>
+        <div class="metaLine">
+          <span class="chip">${new Date(s.abertura).toLocaleString()}</span>
+          <span class="chip">${escapeHtml(s.prioridade||'NORMAL')}</span>
+        </div>
+      `;
+      box.appendChild(el);
+    });
+  }).listarSolicitacoesParaPlantao(filtros);
+}
+
+function abrirDetalheSolicitacao(id){
+  showLoader(true);
+  S.current.solicitacaoId = id;
+  google.script.run.withSuccessHandler(s=>{
+    showLoader(false);
+    if (!s){
+      toast('bad','Solicitação não encontrada','Verifique o ID.');
+      return;
+    }
+    S.current.solicitacao = s;
+    renderDetalheSolicitacao();
+    go('solicitacaoDetalhe');
+  }).obterSolicitacaoDetalhe(id);
+}
+
+function renderDetalheSolicitacao(){
+  const s = S.current.solicitacao;
+  $('gDetalheTipo').textContent = formatTipoSolicitacao(s.tipo);
+  $('gDetalheStatus').textContent = s.status;
+
+  const detalhe = s.detalhe || {};
+  let info = '';
+  if (s.tipo === 'OBITO'){
+    info = `
+      <div class="sub">Paciente ${escapeHtml(detalhe.paciente||'—')} · Prontuário ${escapeHtml(detalhe.prontuario||'—')}</div>
+      <div class="sub">Leito ${escapeHtml(detalhe.leito||'—')} · Clínica ${escapeHtml(detalhe.clinica||'—')}</div>
+      <div class="sub">Data do óbito ${detalhe.dataObito ? new Date(detalhe.dataObito).toLocaleString() : '—'}</div>
+    `;
+  }
+  if (s.tipo === 'INTERCONSULTA'){
+    info = `
+      <div class="sub">Paciente ${escapeHtml(detalhe.paciente||'—')} · Prontuário ${escapeHtml(detalhe.prontuario||'—')}</div>
+      <div class="sub">Clínica ${escapeHtml(detalhe.clinica||'—')} · Especialidade ${escapeHtml(detalhe.especialidade||'—')}</div>
+    `;
+  }
+  if (s.tipo === 'EXAMES'){
+    info = `
+      <div class="sub">Paciente ${escapeHtml(detalhe.paciente||'—')} · Prontuário ${escapeHtml(detalhe.prontuario||'—')}</div>
+      <div class="sub">Exame ${escapeHtml(detalhe.exame||'—')} · Solicitante ${escapeHtml(detalhe.solicitante||'—')}</div>
+      <div class="sub">Data da solicitação ${detalhe.dataSolicitacao ? new Date(detalhe.dataSolicitacao).toLocaleString() : '—'}</div>
+    `;
+  }
+
+  $('gDetalheCard').innerHTML = `
+    <div class="cardrow">
+      <b>${escapeHtml(s.nomeSolicitante || 'Solicitação')}</b>
+      ${info}
+      <div class="metaLine">
+        <span class="chip">Abertura ${new Date(s.abertura).toLocaleString()}</span>
+        <span class="chip">${escapeHtml(s.prioridade||'NORMAL')}</span>
+      </div>
+      ${s.observacao ? `<div class="sub">Obs: ${escapeHtml(s.observacao)}</div>` : ''}
+    </div>
+  `;
+}
+
+function formatTipoSolicitacao(tipo){
+  if (tipo === 'OBITO') return 'Declaração de Óbito';
+  if (tipo === 'INTERCONSULTA') return 'Interconsulta';
+  if (tipo === 'EXAMES') return 'Exames';
+  return tipo || 'Solicitação';
 }
 
 /* =========================

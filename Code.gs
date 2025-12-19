@@ -5,6 +5,15 @@ function _sh(name){ return SpreadsheetApp.getActive().getSheetByName(name); }
 function _vals(name){ return _sh(name).getDataRange().getValues(); }
 function _uuid(){ return Utilities.getUuid(); }
 function _now(){ return new Date(); }
+function _startOfDay(date){
+  const d = new Date(date || _now());
+  d.setHours(0,0,0,0);
+  return d;
+}
+function _fmt(date){
+  if (!date) return '';
+  return Utilities.formatDate(new Date(date), Session.getScriptTimeZone(), 'dd/MM/yyyy HH:mm');
+}
 function _isTrue(value){
   if (value === true) return true;
   if (value === false || value === null || value === undefined) return false;
@@ -48,6 +57,272 @@ function ehPlantao(ramal){
     if (String(data[i][0]) === String(ramal) && _isTrue(data[i][2])) return true;
   }
   return false;
+}
+
+/* =========================
+   ADMIN
+========================= */
+function obterMonitorAdmin(){
+  const now = _now();
+  const todayStart = _startOfDay(now).getTime();
+  const seisHorasMs = 6 * 60 * 60 * 1000;
+
+  const protocolos = _vals('SEPSE_PROTOCOLOS');
+  const eventos = _vals('SEPSE_EVENTOS');
+
+  let sepseAbertos = 0;
+  let pendentes6h = 0;
+  const confirmados6h = new Set();
+
+  for (let i=1;i<eventos.length;i++){
+    if (eventos[i][2] === 'CONFIRMACAO_6H'){
+      confirmados6h.add(eventos[i][1]);
+    }
+  }
+
+  for (let i=1;i<protocolos.length;i++){
+    const status = protocolos[i][6];
+    if (status === 'ABERTO'){
+      sepseAbertos++;
+      const abertura = new Date(protocolos[i][8]).getTime();
+      if (abertura && (now.getTime() - abertura >= seisHorasMs) && !confirmados6h.has(protocolos[i][0])){
+        pendentes6h++;
+      }
+    }
+  }
+
+  let ligacoesHoje = 0;
+  const setoresComContato = new Set();
+  for (let i=1;i<eventos.length;i++){
+    const tipo = eventos[i][2];
+    const data = new Date(eventos[i][5]).getTime();
+    if (tipo === 'LIGACAO' && data >= todayStart){
+      ligacoesHoje++;
+      if (eventos[i][3]) setoresComContato.add(String(eventos[i][3]));
+    }
+  }
+
+  const setores = _vals('CONFIG_SETORES_SEPSE');
+  let setoresSemContato = 0;
+  for (let i=1;i<setores.length;i++){
+    const ativo = _isTrue(setores[i][3]);
+    const exigeContato = _isTrue(setores[i][4]);
+    if (ativo && exigeContato){
+      const nome = String(setores[i][1]);
+      if (!setoresComContato.has(nome)) setoresSemContato++;
+    }
+  }
+
+  const ramais = _vals('CONFIG_RAMAL');
+  let ramaisAtivos = 0;
+  let ramaisInativos = 0;
+  for (let i=1;i<ramais.length;i++){
+    if (_isTrue(ramais[i][3])) ramaisAtivos++;
+    else ramaisInativos++;
+  }
+
+  return {
+    sepseAbertos,
+    pendentes6h,
+    ligacoesHoje,
+    setoresSemContato,
+    ramaisAtivos,
+    ramaisInativos,
+    atualizadoEm: _fmt(now),
+    resumo: 'Atualizado automaticamente'
+  };
+}
+
+function listarRamaisAdmin(){
+  const data = _vals('CONFIG_RAMAL');
+  const out = [];
+  for (let i=1;i<data.length;i++){
+    out.push({
+      ramal: data[i][0],
+      setor: data[i][1],
+      funcao: data[i][2],
+      ativo: _isTrue(data[i][3]),
+      observacoes: data[i][4] || ''
+    });
+  }
+  return out;
+}
+
+function salvarRamalAdmin(payload){
+  const sh = _sh('CONFIG_RAMAL');
+  const data = sh.getDataRange().getValues();
+  const ramal = String(payload.ramal || '').trim();
+  if (!ramal) return false;
+  for (let i=1;i<data.length;i++){
+    if (String(data[i][0]) === ramal){
+      sh.getRange(i+1,2).setValue(payload.setor || '');
+      sh.getRange(i+1,3).setValue(payload.funcao || '');
+      sh.getRange(i+1,4).setValue(payload.ativo ? true : false);
+      sh.getRange(i+1,5).setValue(payload.observacoes || '');
+      return true;
+    }
+  }
+  sh.appendRow([ramal, payload.setor || '', payload.funcao || '', payload.ativo ? true : false, payload.observacoes || '']);
+  return true;
+}
+
+function atualizarStatusRamalAdmin(ramal, ativo){
+  const sh = _sh('CONFIG_RAMAL');
+  const data = sh.getDataRange().getValues();
+  for (let i=1;i<data.length;i++){
+    if (String(data[i][0]) === String(ramal)){
+      sh.getRange(i+1,4).setValue(_isTrue(ativo));
+      return true;
+    }
+  }
+  return false;
+}
+
+function listarPlantaoAdmin(){
+  const data = _vals('USUARIOS_PLANTAO');
+  const out = [];
+  for (let i=1;i<data.length;i++){
+    out.push({
+      ramal: data[i][0],
+      nome: data[i][1],
+      ativo: _isTrue(data[i][2]),
+      atualizadoEm: ''
+    });
+  }
+  return out;
+}
+
+function salvarPlantaoAdmin(payload){
+  const sh = _sh('USUARIOS_PLANTAO');
+  const data = sh.getDataRange().getValues();
+  const ramal = String(payload.ramal || '').trim();
+  if (!ramal) return false;
+  for (let i=1;i<data.length;i++){
+    if (String(data[i][0]) === ramal){
+      sh.getRange(i+1,2).setValue(payload.nome || '');
+      sh.getRange(i+1,3).setValue(payload.ativo ? true : false);
+      return true;
+    }
+  }
+  sh.appendRow([ramal, payload.nome || '', payload.ativo ? true : false]);
+  return true;
+}
+
+function atualizarStatusPlantaoAdmin(ramal, ativo){
+  const sh = _sh('USUARIOS_PLANTAO');
+  const data = sh.getDataRange().getValues();
+  for (let i=1;i<data.length;i++){
+    if (String(data[i][0]) === String(ramal)){
+      sh.getRange(i+1,3).setValue(_isTrue(ativo));
+      return true;
+    }
+  }
+  return false;
+}
+
+function listarSetoresAdmin(){
+  const data = _vals('CONFIG_SETORES_SEPSE');
+  const out = [];
+  for (let i=1;i<data.length;i++){
+    out.push({
+      id: data[i][0],
+      nome: data[i][1],
+      tipo: data[i][2],
+      ativo: _isTrue(data[i][3]),
+      exigeContato: _isTrue(data[i][4])
+    });
+  }
+  return out;
+}
+
+function salvarSetorAdmin(payload){
+  const sh = _sh('CONFIG_SETORES_SEPSE');
+  const data = sh.getDataRange().getValues();
+  const id = String(payload.id || '').trim();
+  if (!id) return false;
+  for (let i=1;i<data.length;i++){
+    if (String(data[i][0]) === id){
+      sh.getRange(i+1,2).setValue(payload.nome || '');
+      sh.getRange(i+1,3).setValue(payload.tipo || '');
+      sh.getRange(i+1,4).setValue(payload.ativo ? true : false);
+      sh.getRange(i+1,5).setValue(payload.exigeContato ? true : false);
+      return true;
+    }
+  }
+  sh.appendRow([id, payload.nome || '', payload.tipo || '', payload.ativo ? true : false, payload.exigeContato ? true : false]);
+  return true;
+}
+
+function atualizarStatusSetorAdmin(id, ativo){
+  const sh = _sh('CONFIG_SETORES_SEPSE');
+  const data = sh.getDataRange().getValues();
+  for (let i=1;i<data.length;i++){
+    if (String(data[i][0]) === String(id)){
+      sh.getRange(i+1,4).setValue(_isTrue(ativo));
+      return true;
+    }
+  }
+  return false;
+}
+
+function listarConfigGeralAdmin(){
+  const data = _vals('CONFIG_GERAL');
+  const out = [];
+  for (let i=1;i<data.length;i++){
+    out.push({
+      chave: data[i][0],
+      valor: data[i][1],
+      descricao: data[i][2]
+    });
+  }
+  return out;
+}
+
+function salvarConfigGeralAdmin(payload){
+  const sh = _sh('CONFIG_GERAL');
+  const data = sh.getDataRange().getValues();
+  const chave = String(payload.chave || '').trim();
+  if (!chave) return false;
+  for (let i=1;i<data.length;i++){
+    if (String(data[i][0]).trim().toUpperCase() === chave.toUpperCase()){
+      sh.getRange(i+1,2).setValue(payload.valor || '');
+      sh.getRange(i+1,3).setValue(payload.descricao || '');
+      return true;
+    }
+  }
+  sh.appendRow([chave, payload.valor || '', payload.descricao || '']);
+  return true;
+}
+
+function obterSaudeSistema(){
+  const eventos = _vals('SEPSE_EVENTOS');
+  const notifs = _vals('NOTIFICACOES_LOG');
+  const logs = _vals('LOG_SISTEMA');
+  let ultimoEvento = '';
+  let ultimaNotificacao = '';
+  let ultimoErro = '';
+
+  if (eventos.length > 1){
+    const last = eventos[eventos.length-1][5];
+    ultimoEvento = last ? _fmt(last) : '';
+  }
+  if (notifs.length > 1){
+    const last = notifs[notifs.length-1][4];
+    ultimaNotificacao = last ? _fmt(last) : '';
+  }
+  for (let i=logs.length-1;i>=1;i--){
+    if (String(logs[i][1]).toUpperCase() === 'ERRO'){
+      ultimoErro = `${_fmt(logs[i][0])} · ${logs[i][3]}`;
+      break;
+    }
+  }
+
+  return {
+    ultimoEvento: ultimoEvento || 'Sem eventos',
+    ultimaNotificacao: ultimaNotificacao || 'Sem notificações',
+    ultimoErro: ultimoErro || 'Sem erros',
+    status: 'Sistema funcionando normalmente'
+  };
 }
 
 /* =========================
